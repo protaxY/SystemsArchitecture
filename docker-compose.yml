@@ -1,0 +1,23 @@
+version: '3.2'
+services:
+  arch:
+    tty: true
+    container_name: arch
+    volumes:
+      - .:/opt/arch
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - arch-network
+
+  structurizr:
+    image: structurizr/lite
+    ports:
+      - 8082:8080
+    volumes:
+      - ./hl_mai_lab_00:/usr/local/structurizr:z
+    networks:
+      - arch-network
