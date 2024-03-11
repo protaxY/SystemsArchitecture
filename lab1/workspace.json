@@ -1,0 +1,707 @@
+{
+  "configuration" : { },
+  "description" : "Учебное приложение для курса \"Aрхитектуры информационных систем\"",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedAgent" : "structurizr-javascript",
+  "lastModifiedDate" : "2024-03-11T19:47:35Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "containerInstances" : [ {
+        "containerId" : "3",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Production",
+        "id" : "15",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "prodution.aa.f8a511c9-a500-4fdb-8787-84c811de7157"
+        },
+        "relationships" : [ {
+          "description" : "Получение/обновление данных о пользователях",
+          "destinationId" : "18",
+          "id" : "19",
+          "linkedRelationshipId" : "9",
+          "sourceId" : "15"
+        }, {
+          "description" : "Получение/обновление данных о записях и сообщениях пользователейы",
+          "destinationId" : "21",
+          "id" : "22",
+          "linkedRelationshipId" : "11",
+          "sourceId" : "15"
+        }, {
+          "description" : "Получение/обновление данных о пользователях",
+          "destinationId" : "24",
+          "id" : "25",
+          "linkedRelationshipId" : "10",
+          "sourceId" : "15"
+        } ],
+        "tags" : "Container Instance"
+      } ],
+      "environment" : "Production",
+      "id" : "14",
+      "instances" : "3",
+      "name" : "User Server",
+      "properties" : {
+        "structurizr.dsl.identifier" : "prodution.aa"
+      },
+      "tags" : "Element,Deployment Node"
+    }, {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "4",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "18",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.647c556a-2f74-4ae3-abfa-c49959278eff.d32b5ba3-2d07-4b5c-8ba0-2220bba8cc43"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "17",
+        "instances" : "1",
+        "name" : "User Database Server",
+        "properties" : {
+          "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.647c556a-2f74-4ae3-abfa-c49959278eff"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "6",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "21",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.33560215-c044-419c-be47-4dedd9117215.5535b691-e255-4fc0-a1da-dc7bf03c9da2"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "20",
+        "instances" : "3",
+        "name" : "Document Database Server",
+        "properties" : {
+          "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.33560215-c044-419c-be47-4dedd9117215"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "5",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "24",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.d8cd6313-4748-4585-aca1-9f2e91a3f985.11374bbd-6c12-433e-b03f-046a9836717e"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "23",
+        "instances" : "1",
+        "name" : "Cache Server",
+        "properties" : {
+          "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2.d8cd6313-4748-4585-aca1-9f2e91a3f985"
+        },
+        "tags" : "Element,Deployment Node"
+      } ],
+      "environment" : "Production",
+      "id" : "16",
+      "instances" : "1",
+      "name" : "databases",
+      "properties" : {
+        "structurizr.dsl.identifier" : "prodution.444e617e-551b-442f-9329-f03236029ba2"
+      },
+      "tags" : "Element,Deployment Node"
+    } ],
+    "people" : [ {
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "Пользователь социальной сети",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Отправка запросов и получение результатов",
+        "destinationId" : "3",
+        "id" : "12",
+        "properties" : {
+          "structurizr.dsl.identifier" : "e75d1605-0bb9-4273-9b86-04009d725c9c"
+        },
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Отправка запросов и получение результатов",
+        "destinationId" : "2",
+        "id" : "13",
+        "linkedRelationshipId" : "12",
+        "sourceId" : "1"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "properties" : {
+      "structurizr.groupSeparator" : "/"
+    },
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "API взаимодествия пользователя с социальной сетью",
+        "documentation" : { },
+        "id" : "3",
+        "name" : "Service API",
+        "properties" : {
+          "structurizr.dsl.identifier" : "social_network.rest_api_service"
+        },
+        "relationships" : [ {
+          "description" : "Получение/обновление данных о пользователях",
+          "destinationId" : "4",
+          "id" : "9",
+          "properties" : {
+            "structurizr.dsl.identifier" : "11520f9f-c2c1-49c2-9ab1-00dc33c366a7"
+          },
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Получение/обновление данных о пользователях",
+          "destinationId" : "5",
+          "id" : "10",
+          "properties" : {
+            "structurizr.dsl.identifier" : "2a30f485-8f36-4795-8678-78f5957f82a6"
+          },
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Получение/обновление данных о записях и сообщениях пользователейы",
+          "destinationId" : "6",
+          "id" : "11",
+          "properties" : {
+            "structurizr.dsl.identifier" : "58f43ac8-b283-40de-a31f-e41004a63e22"
+          },
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "description" : "База данных с информацией о пользователях",
+        "documentation" : { },
+        "group" : "Слой данных",
+        "id" : "4",
+        "name" : "User Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "social_network.user_database"
+        },
+        "tags" : "Element,Container,database",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Кеш пользовательских данных для ускорения запросов по ключевым полям",
+        "documentation" : { },
+        "group" : "Слой данных",
+        "id" : "5",
+        "name" : "User Cache",
+        "properties" : {
+          "structurizr.dsl.identifier" : "social_network.user_cache"
+        },
+        "tags" : "Element,Container,database",
+        "technology" : "Redis"
+      }, {
+        "components" : [ {
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Коллекция сообщений пользователей",
+          "properties" : {
+            "structurizr.dsl.identifier" : "social_network.document_database.messages_collection"
+          },
+          "tags" : "Element,Component,database"
+        }, {
+          "documentation" : { },
+          "id" : "8",
+          "name" : "Коллекция записей на стене пользователей",
+          "properties" : {
+            "structurizr.dsl.identifier" : "social_network.document_database.posts_collection"
+          },
+          "tags" : "Element,Component,database"
+        } ],
+        "description" : "База данных для хранения информации о записях и сообщениях пользователей",
+        "documentation" : { },
+        "group" : "Слой данных",
+        "id" : "6",
+        "name" : "Document Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "social_network.document_database"
+        },
+        "tags" : "Element,Container,database",
+        "technology" : "MongoDB"
+      } ],
+      "description" : "Сервер социальной сети",
+      "documentation" : { },
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Социальная сеть",
+      "properties" : {
+        "structurizr.dsl.identifier" : "social_network"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Социальная сеть",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKICAgIG5hbWUgItCh0L7RhtC40LDQu9GM0L3QsNGPINGB0LXRgtGMIgogICAgZGVzY3JpcHRpb24gItCj0YfQtdCx0L3QvtC1INC/0YDQuNC70L7QttC10L3QuNC1INC00LvRjyDQutGD0YDRgdCwIFwiQdGA0YXQuNGC0LXQutGC0YPRgNGLINC40L3RhNC+0YDQvNCw0YbQuNC+0L3QvdGL0YUg0YHQuNGB0YLQtdC8XCIiCgogICAgIWlkZW50aWZpZXJzIGhpZXJhcmNoaWNhbAoKICAgIG1vZGVsIHsKICAgICAgICBwcm9wZXJ0aWVzIHsgCiAgICAgICAgICAgIHN0cnVjdHVyaXpyLmdyb3VwU2VwYXJhdG9yICIvIgogICAgICAgIH0KICAgICAgICAKICAgICAgICB1c2VyID0gcGVyc29uICLQn9C+0LvRjNC30L7QstCw0YLQtdC70Ywg0YHQvtGG0LjQsNC70YzQvdC+0Lkg0YHQtdGC0LgiCiAgICAgICAgc29jaWFsX25ldHdvcmsgPSBzb2Z0d2FyZVN5c3RlbSAi0KHQvtGG0LjQsNC70YzQvdCw0Y8g0YHQtdGC0YwiewogICAgICAgICAgICBkZXNjcmlwdGlvbiAi0KHQtdGA0LLQtdGAINGB0L7RhtC40LDQu9GM0L3QvtC5INGB0LXRgtC4IgoKICAgICAgICAgICAgcmVzdF9hcGlfc2VydmljZSA9IGNvbnRhaW5lciAiU2VydmljZSBBUEkiIHsKICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBUEkg0LLQt9Cw0LjQvNC+0LTQtdGB0YLQstC40Y8g0L/QvtC70YzQt9C+0LLQsNGC0LXQu9GPINGBINGB0L7RhtC40LDQu9GM0L3QvtC5INGB0LXRgtGM0Y4iCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGdyb3VwICLQodC70L7QuSDQtNCw0L3QvdGL0YUiIHsKICAgICAgICAgICAgICAgIHVzZXJfZGF0YWJhc2UgPSBjb250YWluZXIgIlVzZXIgRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAi0JHQsNC30LAg0LTQsNC90L3Ri9GFINGBINC40L3RhNC+0YDQvNCw0YbQuNC10Lkg0L4g0L/QvtC70YzQt9C+0LLQsNGC0LXQu9GP0YUiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiUG9zdGdyZVNRTCIKICAgICAgICAgICAgICAgICAgICB0YWdzICJkYXRhYmFzZSIKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICB1c2VyX2NhY2hlID0gY29udGFpbmVyICJVc2VyIENhY2hlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gItCa0LXRiCDQv9C+0LvRjNC30L7QstCw0YLQtdC70YzRgdC60LjRhSDQtNCw0L3QvdGL0YUg0LTQu9GPINGD0YHQutC+0YDQtdC90LjRjyDQt9Cw0L/RgNC+0YHQvtCyINC/0L4g0LrQu9GO0YfQtdCy0YvQvCDQv9C+0LvRj9C8IgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlJlZGlzIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgImRhdGFiYXNlIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIGRvY3VtZW50X2RhdGFiYXNlID0gY29udGFpbmVyICJEb2N1bWVudCBEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICLQkdCw0LfQsCDQtNCw0L3QvdGL0YUg0LTQu9GPINGF0YDQsNC90LXQvdC40Y8g0LjQvdGE0L7RgNC80LDRhtC40Lgg0L4g0LfQsNC/0LjRgdGP0YUg0Lgg0YHQvtC+0LHRidC10L3QuNGP0YUg0L/QvtC70YzQt9C+0LLQsNGC0LXQu9C10LkiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiTW9uZ29EQiIKICAgICAgICAgICAgICAgICAgICB0YWdzICJkYXRhYmFzZSIKCiAgICAgICAgICAgICAgICAgICAgbWVzc2FnZXNfY29sbGVjdGlvbiA9IGNvbXBvbmVudCAi0JrQvtC70LvQtdC60YbQuNGPINGB0L7QvtCx0YnQtdC90LjQuSDQv9C+0LvRjNC30L7QstCw0YLQtdC70LXQuSJ7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgImRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBwb3N0c19jb2xsZWN0aW9uID0gY29tcG9uZW50ICLQmtC+0LvQu9C10LrRhtC40Y8g0LfQsNC/0LjRgdC10Lkg0L3QsCDRgdGC0LXQvdC1INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvQtdC5InsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiZGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICByZXN0X2FwaV9zZXJ2aWNlIC0+IHVzZXJfZGF0YWJhc2UgItCf0L7Qu9GD0YfQtdC90LjQtS/QvtCx0L3QvtCy0LvQtdC90LjQtSDQtNCw0L3QvdGL0YUg0L4g0L/QvtC70YzQt9C+0LLQsNGC0LXQu9GP0YUiCiAgICAgICAgICAgIHJlc3RfYXBpX3NlcnZpY2UgLT4gdXNlcl9jYWNoZSAi0J/QvtC70YPRh9C10L3QuNC1L9C+0LHQvdC+0LLQu9C10L3QuNC1INC00LDQvdC90YvRhSDQviDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y/RhSIKICAgICAgICAgICAgcmVzdF9hcGlfc2VydmljZSAtPiBkb2N1bWVudF9kYXRhYmFzZSAi0J/QvtC70YPRh9C10L3QuNC1L9C+0LHQvdC+0LLQu9C10L3QuNC1INC00LDQvdC90YvRhSDQviDQt9Cw0L/QuNGB0Y/RhSDQuCDRgdC+0L7QsdGJ0LXQvdC40Y/RhSDQv9C+0LvRjNC30L7QstCw0YLQtdC70LXQudGLIgogICAgICAgICAgICAKICAgICAgICAgICAgdXNlciAtPiByZXN0X2FwaV9zZXJ2aWNlICLQntGC0L/RgNCw0LLQutCwINC30LDQv9GA0L7RgdC+0LIg0Lgg0L/QvtC70YPRh9C10L3QuNC1INGA0LXQt9GD0LvRjNGC0LDRgtC+0LIiCiAgICAgICAgfQoKICAgICAgICBwcm9kdXRpb24gPSBkZXBsb3ltZW50RW52aXJvbm1lbnQgIlByb2R1Y3Rpb24iIHsKICAgICAgICAgICAgYWEgPSBkZXBsb3ltZW50Tm9kZSAiVXNlciBTZXJ2ZXIiIHsKICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UKICAgICAgICAgICAgICAgIGluc3RhbmNlcyAzCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJkYXRhYmFzZXMiIHsKICAgICAKICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJVc2VyIERhdGFiYXNlIFNlcnZlciIgewogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIHNvY2lhbF9uZXR3b3JrLnVzZXJfZGF0YWJhc2UKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRG9jdW1lbnQgRGF0YWJhc2UgU2VydmVyIiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugc29jaWFsX25ldHdvcmsuZG9jdW1lbnRfZGF0YWJhc2UKICAgICAgICAgICAgICAgICAgICBpbnN0YW5jZXMgMwogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDYWNoZSBTZXJ2ZXIiIHsKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBzb2NpYWxfbmV0d29yay51c2VyX2NhY2hlCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNvY2lhbF9uZXR3b3JrIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBzb2NpYWxfbmV0d29yayB7CiAgICAgICAgICAgIGF1dG9MYXlvdXQKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQogICAgICAgIAogICAgICAgIGRlcGxveW1lbnQgc29jaWFsX25ldHdvcmsgcHJvZHV0aW9uIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc29jaWFsX25ldHdvcmsgIlVDMDEiICLQodC+0LfQtNCw0L3QuNC1INC90L7QstC+0LPQviDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8iIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICB1c2VyIC0+IHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgItCh0L7Qt9C00LDRgtGMINC90L7QstC+0LPQviDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8gKFBPU1QgL3VzZXIpIgogICAgICAgICAgICBzb2NpYWxfbmV0d29yay5yZXN0X2FwaV9zZXJ2aWNlIC0+IHNvY2lhbF9uZXR3b3JrLnVzZXJfY2FjaGUgItCU0L7QsdCw0LLQuNGC0Ywg0LfQsNC/0LjRgdGMINC+INC90L7QstC+0Lwg0L/QvtC70YzQt9C+0LLQsNGC0LXQu9C1INCyINC60Y3RiCIKICAgICAgICAgICAgc29jaWFsX25ldHdvcmsucmVzdF9hcGlfc2VydmljZSAtPiBzb2NpYWxfbmV0d29yay51c2VyX2RhdGFiYXNlICLQlNC+0LHQsNCy0LjRgtGMINC30LDQv9C40YHRjCDQviDQvdC+0LLQvtC8INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvQtSDQsiDQsdCw0LfRgyDQtNCw0L3QvdGL0YUiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNvY2lhbF9uZXR3b3JrICJVQzAyIiAi0J/QvtC40YHQuiDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8g0L/QviDQu9C+0LPQuNC90YMiIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICB1c2VyIC0+IHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgItCd0LDQudGC0Lgg0L/QvtC70YzQt9C+0LLQsNGC0LXQu9GPINC/0L4g0LvQvtCz0LjQvdGDIChHRVQgL3VzZXIpIgogICAgICAgICAgICBzb2NpYWxfbmV0d29yay5yZXN0X2FwaV9zZXJ2aWNlIC0+IHNvY2lhbF9uZXR3b3JrLnVzZXJfY2FjaGUgItCf0L7Qu9GD0YfQuNGC0Ywg0LfQsNC/0LjRgdGMINC+INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvQtSDQtdGB0LvQuCDQvtC90LAg0LrRjdGI0LjRgNC+0LLQsNC90L3QsCIKICAgICAgICAgICAgc29jaWFsX25ldHdvcmsucmVzdF9hcGlfc2VydmljZSAtPiBzb2NpYWxfbmV0d29yay51c2VyX2RhdGFiYXNlICLQn9C+0LvRg9GH0LjRgtGMINC30LDQv9C40YHRjCDQviDQv9C+0LvRjNC30L7QstCw0YLQtdC70LUiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNvY2lhbF9uZXR3b3JrICJVQzAzIiAi0J/QvtC40YHQuiDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8g0L/QviDQvNCw0YHQutC1INC40LzRjyDQuCDRhNCw0LzQuNC70LjQuCIgewogICAgICAgICAgICBhdXRvTGF5b3V0CiAgICAgICAgICAgIHVzZXIgLT4gc29jaWFsX25ldHdvcmsucmVzdF9hcGlfc2VydmljZSAi0J3QsNC50YLQuCDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8g0L/QviDQvNCw0YHQutC1INC40LzRjyDQuCDRhNCw0LzQuNC70LjQuCAoR0VUIC91c2VyL3NlYXJjaCkiCiAgICAgICAgICAgIHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgLT4gc29jaWFsX25ldHdvcmsudXNlcl9kYXRhYmFzZSAi0J/QvtC70YPRh9C40YLRjCDRgdC/0LjRgdC+0Log0LfQsNC/0LjRgdC10Lkg0L/QvtC00YXQvtC00Y/RidC40YUg0L/QvtC70YzQt9C+0LLQsNGC0LXQu9C5IgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBzb2NpYWxfbmV0d29yayAiVUMwNCIgItCU0L7QsdCw0LLQu9C10L3QuNC1INC30LDQv9C40YHQuCDQvdCwINGB0YLQtdC90YMiIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICB1c2VyIC0+IHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgItCU0L7QsdCw0LLQu9C10L3QuNC1INC30LDQv9C40YHQuCDQvdCwINGB0YLQtdC90YMgKFBPU1QgL3VzZXIve3VzZXJfaWR9L3Bvc3RzKSIKICAgICAgICAgICAgc29jaWFsX25ldHdvcmsucmVzdF9hcGlfc2VydmljZSAtPiBzb2NpYWxfbmV0d29yay5kb2N1bWVudF9kYXRhYmFzZSAi0JTQvtCx0LDQstC40YLRjCDQvdC+0LLRi9C5INC00L7QutGD0LzQtdC90YIg0LIg0LHQsNC30YMg0LTQsNC90L3Ri9GFIgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBzb2NpYWxfbmV0d29yayAiVUMwNSIgItCX0LDQs9GA0YPQt9C60LAg0YHRgtC10L3RiyDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8iIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICB1c2VyIC0+IHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgItCX0LDQs9GA0YPQt9C60LAg0YHQv9C40YHQutCwINC30LDQv9C40YHQtdC5INC90LAg0YHRgtC10L3QtSDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y8gKEdFVCAvdXNlci97dXNlcl9pZH0vcG9zdHMpIgogICAgICAgICAgICBzb2NpYWxfbmV0d29yay5yZXN0X2FwaV9zZXJ2aWNlIC0+IHNvY2lhbF9uZXR3b3JrLmRvY3VtZW50X2RhdGFiYXNlICLQl9Cw0LPRgNGD0LfQuNGC0Ywg0LTQvtC60YPQvNC10L3RgtGLINC30LDQv9C40YHQtdC5INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjyIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc29jaWFsX25ldHdvcmsgIlVDMDYiICLQntGC0L/RgNCw0LLQutCwINGB0L7QvtCx0YnQtdC90LjRjyDQv9C+0LvRjNC30L7QstCw0YLQtdC70Y4iIHsKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgICAgICB1c2VyIC0+IHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgItCe0YLQv9GA0LDQstC60LAg0YHQvtC+0LHRidC10L3QuNGPINC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjiAoUE9TVCAvdXNlci97dXNlcl9pZH0vbWVzc2FnZXMpIgogICAgICAgICAgICBzb2NpYWxfbmV0d29yay5yZXN0X2FwaV9zZXJ2aWNlIC0+IHNvY2lhbF9uZXR3b3JrLmRvY3VtZW50X2RhdGFiYXNlICLQlNC+0LHQsNCy0LjRgtGMINC90L7QstGL0Lkg0LTQvtC60YPQvNC10L3RgiDQsiDQsdCw0LfRgyDQtNCw0L3QvdGL0YUiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNvY2lhbF9uZXR3b3JrICJVQzA3IiAi0J/QvtC70YPRh9C10L3QuNC1INGB0L/QuNGB0LrQsCDRgdC+0L7QsdGJ0LXQvdC40Lkg0LTQu9GPINC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjyIgewogICAgICAgICAgICBhdXRvTGF5b3V0CiAgICAgICAgICAgIHVzZXIgLT4gc29jaWFsX25ldHdvcmsucmVzdF9hcGlfc2VydmljZSAi0J/QvtC70YPRh9C10L3QuNC1INGB0L/QuNGB0LrQsCDRgdC+0L7QsdGJ0LXQvdC40Lkg0LTQu9GPINC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjyAoR0VUIC91c2VyL3t1c2VyX2lkfS9tZXNzYWdlcykiCiAgICAgICAgICAgIHNvY2lhbF9uZXR3b3JrLnJlc3RfYXBpX3NlcnZpY2UgLT4gc29jaWFsX25ldHdvcmsuZG9jdW1lbnRfZGF0YWJhc2UgItCX0LDQs9GA0YPQt9C40YLRjCDQtNC+0LrRg9C80LXQvdGC0Ysg0YHQvtC+0LHRidC10L3QuNC5INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjyIKICAgICAgICB9CgogICAgICAgIHRoZW1lIGRlZmF1bHQKCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiZGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIGN5bGluZGVyCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIHByb3BlcnRpZXMgeyAKICAgICAgICAgICAgc3RydWN0dXJpenIudG9vbHRpcHMgdHJ1ZQogICAgICAgIH0KICAgIH0KCn0K"
+  },
+  "views" : {
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "UC07",
+      "metadataSymbols" : "SquareBrackets",
+      "properties" : {
+        "structurizr.tooltips" : "true"
+      },
+      "styles" : {
+        "elements" : [ {
+          "shape" : "Cylinder",
+          "tag" : "database"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "dimensions" : {
+        "height" : 2065,
+        "width" : 2430
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 989,
+        "y" : 199
+      }, {
+        "id" : "3",
+        "x" : 989,
+        "y" : 799
+      }, {
+        "id" : "4",
+        "x" : 1739,
+        "y" : 1399
+      }, {
+        "id" : "5",
+        "x" : 989,
+        "y" : 1399
+      }, {
+        "id" : "6",
+        "x" : 239,
+        "y" : 1399
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Container-001",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "10"
+      }, {
+        "id" : "11"
+      }, {
+        "id" : "12"
+      }, {
+        "id" : "9"
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Production",
+      "generatedKey" : true,
+      "key" : "Deployment-001",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "19"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "25"
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Создание нового пользователя",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC01",
+      "order" : 4,
+      "relationships" : [ {
+        "description" : "Создать нового пользователя (POST /user)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Добавить запись о новом пользователе в кэш",
+        "id" : "10",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Добавить запись о новом пользователе в базу данных",
+        "id" : "9",
+        "order" : "3",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Поиск пользователя по логину",
+      "dimensions" : {
+        "height" : 2065,
+        "width" : 1680
+      },
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 614,
+        "y" : 200
+      }, {
+        "id" : "3",
+        "x" : 614,
+        "y" : 800
+      }, {
+        "id" : "4",
+        "x" : 989,
+        "y" : 1400
+      }, {
+        "id" : "5",
+        "x" : 239,
+        "y" : 1400
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC02",
+      "order" : 5,
+      "relationships" : [ {
+        "description" : "Найти пользователя по логину (GET /user)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Получить запись о пользователе если она кэшированна",
+        "id" : "10",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "Получить запись о пользователе",
+        "id" : "9",
+        "order" : "3",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Поиск пользователя по маске имя и фамилии",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC03",
+      "order" : 6,
+      "relationships" : [ {
+        "description" : "Найти пользователя по маске имя и фамилии (GET /user/search)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Получить список записей подходящих пользователй",
+        "id" : "9",
+        "order" : "2",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Добавление записи на стену",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC04",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "Добавление записи на стену (POST /user/{user_id}/posts)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Добавить новый документ в базу данных",
+        "id" : "11",
+        "order" : "2",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Загрузка стены пользователя",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC05",
+      "order" : 8,
+      "relationships" : [ {
+        "description" : "Загрузка списка записей на стене пользователя (GET /user/{user_id}/posts)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Загрузить документы записей пользователя",
+        "id" : "11",
+        "order" : "2",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Отправка сообщения пользователю",
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC06",
+      "order" : 9,
+      "relationships" : [ {
+        "description" : "Отправка сообщения пользователю (POST /user/{user_id}/messages)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Добавить новый документ в базу данных",
+        "id" : "11",
+        "order" : "2",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Получение списка сообщений для пользователя",
+      "dimensions" : {
+        "height" : 2065,
+        "width" : 930
+      },
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 239,
+        "y" : 199
+      }, {
+        "id" : "3",
+        "x" : 239,
+        "y" : 799
+      }, {
+        "id" : "6",
+        "x" : 239,
+        "y" : 1399
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "UC07",
+      "order" : 10,
+      "relationships" : [ {
+        "description" : "Получение списка сообщений для пользователя (GET /user/{user_id}/messages)",
+        "id" : "12",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "Загрузить документы сообщений пользователя",
+        "id" : "11",
+        "order" : "2",
+        "response" : false
+      } ]
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "generatedKey" : true,
+      "key" : "SystemContext-001",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "13"
+      } ],
+      "softwareSystemId" : "2"
+    } ]
+  }
+}

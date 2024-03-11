@@ -13,7 +13,7 @@ workspace {
         social_network = softwareSystem "Социальная сеть"{
             description "Сервер социальной сети"
 
-            rest_api_service = container "REST API" {
+            rest_api_service = container "Service API" {
                 description "API взаимодествия пользователя с социальной сетью"
             }
 
@@ -95,15 +95,15 @@ workspace {
         dynamic social_network "UC01" "Создание нового пользователя" {
             autoLayout
             user -> social_network.rest_api_service "Создать нового пользователя (POST /user)"
-            social_network.rest_api_service -> social_network.user_database "Добавить запись о новом пользователе в базу данных"
             social_network.rest_api_service -> social_network.user_cache "Добавить запись о новом пользователе в кэш"
+            social_network.rest_api_service -> social_network.user_database "Добавить запись о новом пользователе в базу данных"
         }
 
         dynamic social_network "UC02" "Поиск пользователя по логину" {
             autoLayout
             user -> social_network.rest_api_service "Найти пользователя по логину (GET /user)"
-            social_network.rest_api_service -> social_network.user_database "Получить запись о пользователе"
             social_network.rest_api_service -> social_network.user_cache "Получить запись о пользователе если она кэшированна"
+            social_network.rest_api_service -> social_network.user_database "Получить запись о пользователе"
         }
 
         dynamic social_network "UC03" "Поиск пользователя по маске имя и фамилии" {
@@ -142,6 +142,10 @@ workspace {
             element "database" {
                 shape cylinder
             }
+        }
+
+        properties { 
+            structurizr.tooltips true
         }
     }
 
