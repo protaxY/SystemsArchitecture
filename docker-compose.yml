@@ -1,9 +1,62 @@
-version: "3"
+version: '3.2'
 
 services:
+  arch:
+    tty: true
+    container_name: arch
+    volumes:
+      - .:/opt/arch
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=lab01_postgres
+      - DB_PORT=5432
+      - DB_LOGIN=stud
+      - DB_PASSWORD=stud
+      - DB_DATABASE=archdb
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+    networks:
+      - arch-network
+
   structurizr:
     image: structurizr/lite
     ports:
-      - 8080:8080
+      - 8082:8080
     volumes:
-      - .:/usr/local/structurizr:z
+      - ./lab1:/usr/local/structurizr:z
+    networks:
+      - arch-network
+
+  db:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=stud
+      - POSTGRES_PASSWORD=stud
+      - PGDATA=/data/postgres
+      - POSTGRES_DB=archdb
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arch-network
+
+volumes:
+  db:
+
+networks:
+  arch-network:
+    driver: "bridge"
+    external: false
