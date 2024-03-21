@@ -14,7 +14,8 @@ namespace database{
             Database();
         public:
             static Database& get();
+            void CreateTableIfNotExists();
             Poco::Data::Session create_session();
     };
 }
-#endif
+#endif // DATABASE_H

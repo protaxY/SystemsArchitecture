@@ -3,7 +3,7 @@
 
 #include <string>
 
-class  Config{
+class Config{
     private:
         Config();
         std::string _host;
@@ -28,4 +28,4 @@ class  Config{
         const std::string& get_database() const ;
 };
 
-#endif
+#endif // CONFIG_H
