@@ -36,8 +36,6 @@ namespace database{
                         << "title VARCHAR(1024) NULL);",
             Poco::Data::Keywords::now;
         }
-        
-
         catch (Poco::Data::PostgreSQL::PostgreSQLException &e)
         {
             std::cout << "connection:" << e.displayText() << std::endl;

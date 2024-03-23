@@ -1,1 +1,4 @@
 **/.structurizr
+**/CMakeCache.txt
+**/cmake_install.cmake
+build/

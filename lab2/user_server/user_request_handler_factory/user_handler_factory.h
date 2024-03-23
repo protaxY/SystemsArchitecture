@@ -9,7 +9,6 @@ private:
     std::string _format;
     
 public:
-    UserHandlerFactory();
     Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest & request);
 };
 
