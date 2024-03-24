@@ -6,9 +6,15 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
+#include <Poco/JSON/Parser.h>
 
 class UserHandler : public Poco::Net::HTTPRequestHandler{
+    private:
+        const static Poco::RegularExpression userLoginRegEx;
+        Poco::JSON::Parser _jsonParser;
+
     public:
+
         void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 };
 

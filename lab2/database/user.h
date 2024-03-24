@@ -1,7 +1,10 @@
 #ifndef USER_H
 #define USER_H
 
+#include <Poco/JSON/Object.h>
+
 #include <string>
+#include <optional>
 
 namespace database
 {
@@ -16,7 +19,11 @@ namespace database
             std::string _password;
 
         public:
-            static User fromJSON(const std::string & str);
+            static User fromJSON(const Poco::JSON::Object::Ptr &json, const bool skipId = false);
+            Poco::JSON::Object::Ptr toJSON();
+
+            static bool IsNameValid(const std::string &name, std::string &reason);
+            static bool IsEmailValid(const std::string &email, std::string &reason);
 
             long               get_id() const;
             const std::string &get_first_name() const;
@@ -34,6 +41,11 @@ namespace database
             std::string &login();
             std::string &password();
 
+            void Save();
+            static std::optional<long> Update(std::string &login, const Poco::JSON::Object::Ptr &json);
+            static std::optional<User> SearchByLogin(std::string &login);
+            static std::vector<User> SearchByFirstLastName(std::string &firstName, std::string &lastName);
+            static std::optional<long> Delete(std::string &login);
     };
 } // namespace database
 
