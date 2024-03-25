@@ -10,17 +10,24 @@
 
 const Poco::RegularExpression UserHandler::userLoginRegEx("\\/user\\/\\d+$");
 
-void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response){
+std::string UserHandler::getUserLoginFromRegEx(std::string &match)
+{
+    return match.substr(6, match.length());
+}
+
+void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
+{
     try
-    {
-        Poco::Dynamic::Var json1 = UserHandler::_jsonParser.parse(request.stream());
-        Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
-        
+    {      
         Poco::URI uri(request.getURI());
 
         // создать нового пользователя
         if (uri.getPath() == "/user"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
+            
+            Poco::Dynamic::Var json1 = UserHandler::_jsonParser.parse(request.stream());
+            Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
+            
             if (json->has("first_name") && json->has("last_name") && json->has("email") && json->has("title") && json->has("login") && json->has("password")){
                 
                 bool isValidUser = true;
@@ -45,14 +52,32 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
 
                 if (isValidUser){
                     database::User user = database::User::fromJSON(json);
-                    user.Save();
-
-                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
-                    response.setContentType("application/json");
-                    std::ostream &ostr = response.send();
-                    ostr << user.get_id();
-
+                    std::string login = json->getValue<std::string>("login");
+                    std::optional<database::User> previousUser = database::User::SearchByLogin(login);
+                    if (!previousUser){
+                        user.Save();
+                        response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                        response.setChunkedTransferEncoding(true);
+                        response.setContentType("application/json");
+                        std::ostream &ostr = response.send();
+                        ostr << user.get_id();
+                    }
+                    else
+                    {
+                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+                        response.setChunkedTransferEncoding(true);
+                        response.setContentType("application/json");
+                        Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                        root->set("type", "/errors/bad_request");
+                        root->set("title", "Internal exception");
+                        root->set("status", "400");
+                        root->set("detail", "user with this login already exists");
+                        root->set("instance", "/user");
+                        std::ostream &ostr = response.send();
+                        Poco::JSON::Stringifier::stringify(root, ostr);
+                        return;
+                    }
+                    
                     return;
                 }
                 else
@@ -88,8 +113,8 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         // получить пользователя по логину
         else if (userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
-            Poco::URI::QueryParameters query = uri.getQueryParameters();
-            std::string login = query[0].second;
+            std::string path = uri.getPath();
+            std::string login = getUserLoginFromRegEx(path);
             std::optional<database::User> user = database::User::SearchByLogin(login);
 
             if (user){
@@ -172,8 +197,8 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         // удалить пользователя по ID
         else if (userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_DELETE){
-                        Poco::URI::QueryParameters query = uri.getQueryParameters();
-            std::string login = query[0].second;
+            std::string path = uri.getPath();
+            std::string login = getUserLoginFromRegEx(path);
             std::optional<long> deletedId = database::User::Delete(login);
 
             if (deletedId){
@@ -203,7 +228,13 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         // обновить информацию о пользователе
         else if (userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT){
-            if (json->has("login") && (json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password"))){
+            std::string path = uri.getPath();
+            std::string login = getUserLoginFromRegEx(path);
+
+            Poco::Dynamic::Var json1 = UserHandler::_jsonParser.parse(request.stream());
+            Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
+            
+            if (json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password")){
                 bool isValidUpdateUser = true;
                 std::string validateResult;
                 std::string reason;
@@ -302,6 +333,23 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         }
 
         return;
+    }
+    catch (const Poco::JSON::JSONException e){
+        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+        response.setChunkedTransferEncoding(true);
+        response.setContentType("application/json");
+        Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+        root->set("type", "/errors/bad_request");
+        root->set("title", "Internal exception");
+        root->set("status", "400");
+        root->set("detail", "invalid JSON");
+        root->set("instance", "uri.getPath()"); 
+        std::ostream &ostr = response.send();
+        Poco::JSON::Stringifier::stringify(root, ostr);
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
     }
     catch (...)
     {

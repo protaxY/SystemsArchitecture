@@ -159,7 +159,6 @@ namespace database
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement insert_stmt(session);
 
-            // insert_stmt << "INSERT INTO users (first_name,last_name,email,title,login,password) VALUES($1, $2, $3, $4, $5, $6)",
             insert_stmt << "INSERT INTO users (first_name,last_name,email,title,login,password) VALUES($1, $2, $3, $4, $5, $6)",
                 Poco::Data::Keywords::use(_first_name),
                 Poco::Data::Keywords::use(_last_name),
@@ -167,6 +166,11 @@ namespace database
                 Poco::Data::Keywords::use(_title),
                 Poco::Data::Keywords::use(_login),
                 Poco::Data::Keywords::use(_password),
+                Poco::Data::Keywords::now;
+
+            insert_stmt << "SELECT LASTVAL()",
+                Poco::Data::Keywords::into(_id),
+                Poco::Data::Keywords::range(0, 1),
                 Poco::Data::Keywords::now;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
