@@ -6,9 +6,13 @@
 #include <Poco/Data/Session.h>
 #include <Poco/Data/PostgreSQL/PostgreSQLException.h>
 #include <Poco/Data/RecordSet.h>
+#include <Poco/Crypto/DigestEngine.h>
+#include <Poco/PBKDF2Engine.h>
+#include <Poco/HMACEngine.h>
+#include <Poco/SHA1Engine.h>
 
 namespace database
-{
+{   
     User User::fromJSON(const Poco::JSON::Object::Ptr &json, const bool skipId){
         User user;
 
@@ -156,21 +160,21 @@ namespace database
     void User::Save(){
         try
         {
+            HashPassword();
+            
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement insert_stmt(session);
 
-            insert_stmt << "INSERT INTO users (first_name,last_name,email,title,login,password) VALUES($1, $2, $3, $4, $5, $6)",
+            insert_stmt << "INSERT INTO users (first_name,last_name,email,title,login,password)"
+                           "VALUES($1, $2, $3, $4, $5, $6)"
+                           "RETURNING id;",
                 Poco::Data::Keywords::use(_first_name),
                 Poco::Data::Keywords::use(_last_name),
                 Poco::Data::Keywords::use(_email),
                 Poco::Data::Keywords::use(_title),
                 Poco::Data::Keywords::use(_login),
                 Poco::Data::Keywords::use(_password),
-                Poco::Data::Keywords::now;
-
-            insert_stmt << "SELECT LASTVAL()",
                 Poco::Data::Keywords::into(_id),
-                Poco::Data::Keywords::range(0, 1),
                 Poco::Data::Keywords::now;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
@@ -185,15 +189,22 @@ namespace database
         }
     }
 
-    std::optional<long> User::Update(std::string &login, const Poco::JSON::Object::Ptr &json){
+    void User::RemovePassword()
+    {
+        password() = "******";
+    }
+
+    std::optional<long> User::Update(std::string &login, std::string &oldPassword, const Poco::JSON::Object::Ptr &json){
         try
         {
+            std::string oldHashedPassword = HashPassword(oldPassword);
+            
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement select_stmt(session);
 
             User user;
 
-            select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE login=?",
+            select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE login=$1 AND password=$2",
                             Poco::Data::Keywords::into(user.id()),
                             Poco::Data::Keywords::into(user.last_name()),
                             Poco::Data::Keywords::into(user.email()),
@@ -201,6 +212,7 @@ namespace database
                             Poco::Data::Keywords::into(user.login()),
                             Poco::Data::Keywords::into(user.password()),
                             Poco::Data::Keywords::use(login),
+                            Poco::Data::Keywords::use(oldHashedPassword),
                             Poco::Data::Keywords::range(0, 1),
                             Poco::Data::Keywords::now;
 
@@ -210,20 +222,21 @@ namespace database
                     user.first_name() = json->getValue<std::string>("first_name");
                 }
                 if (json->has("last_name")){
-                    user.first_name() = json->getValue<std::string>("last_name");
+                    user.last_name() = json->getValue<std::string>("last_name");
                 }
                 if (json->has("email")){
-                    user.first_name() = json->getValue<std::string>("email");
+                    user.email() = json->getValue<std::string>("email");
                 }
                 if (json->has("title")){
-                    user.first_name() = json->getValue<std::string>("title");
+                    user.title() = json->getValue<std::string>("title");
                 }
                 if (json->has("password")){
-                    user.first_name() = json->getValue<std::string>("password");
+                    user.password() = json->getValue<std::string>("password");
+                    user.HashPassword();
                 }
 
-                select_stmt << "UPDATE users SET first_name=?, last_name=?, email=?, title=?, password=?"
-                               "WHERE login=?",
+                select_stmt << "UPDATE users SET first_name=$1, last_name=$2, email=$3, title=$4, password=$5"
+                               "WHERE login=$6",
                                 Poco::Data::Keywords::use(user.first_name()),
                                 Poco::Data::Keywords::use(user.last_name()),
                                 Poco::Data::Keywords::use(user.email()),
@@ -269,6 +282,7 @@ namespace database
 
             Poco::Data::RecordSet rs(select_stmt);
             if (rs.moveFirst())
+                user.RemovePassword();
                 return user;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
@@ -293,7 +307,7 @@ namespace database
             std::vector<User> users;
             User user;
 
-            select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE firstName LIKE ? AND lastName LIKE ?",
+            select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE firstName LIKE $1 AND lastName LIKE $2",
                             Poco::Data::Keywords::into(user.id()),
                             Poco::Data::Keywords::into(user.last_name()),
                             Poco::Data::Keywords::into(user.email()),
@@ -307,6 +321,7 @@ namespace database
             while (!select_stmt.done())
             {
                 if (select_stmt.execute())
+                    user.RemovePassword();
                     users.push_back(user);
             }
             return users;
@@ -323,22 +338,25 @@ namespace database
         }
     }
 
-    std::optional<long> User::Delete(std::string &login){
+    std::optional<long> User::Delete(std::string &login, std::string &password){
         try
         {
+            std::string hashedPassword = HashPassword(password);
+            
             Poco::Data::Session session = database::Database::get().create_session();
             Poco::Data::Statement delete_stmt(session);
 
             long id;
-            delete_stmt << "SELECT id FROM users WHERE login=?",
+            delete_stmt << "SELECT id FROM users WHERE login=$1 AND password=$2",
                 Poco::Data::Keywords::into(id),
                 Poco::Data::Keywords::use(login),
+                Poco::Data::Keywords::use(hashedPassword);
                 Poco::Data::Keywords::range(0, 1),
                 Poco::Data::Keywords::now;
 
             Poco::Data::RecordSet rs(delete_stmt);
             if (rs.moveFirst()){
-                delete_stmt << "DELETE FROM users WHERE login=?",
+                delete_stmt << "DELETE FROM users WHERE login=$1",
                                 Poco::Data::Keywords::use(login),
                                 Poco::Data::Keywords::now;
 
@@ -357,6 +375,19 @@ namespace database
             std::cout << "statement:" << e.what() << std::endl;
             throw;
         }
+    }
+
+    std::string User::HashPassword(const std::string &password)
+    {
+        Poco::PBKDF2Engine<Poco::HMACEngine<Poco::SHA1Engine>> pbkdf2("some_salt", 4096, 128);
+        
+        pbkdf2.update(password);
+        return Poco::DigestEngine::digestToHex(pbkdf2.digest());
+    }
+
+    void User::HashPassword()
+    {
+        password() = HashPassword(password());
     }
 
 } // namespace database

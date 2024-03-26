@@ -10,7 +10,7 @@
 
 class UserHandler : public Poco::Net::HTTPRequestHandler{
     private:
-        const static Poco::RegularExpression userLoginRegEx;
+        const static Poco::RegularExpression _userLoginRegEx;
         static std::string getUserLoginFromRegEx(std::string &match);
         
         Poco::JSON::Parser _jsonParser;

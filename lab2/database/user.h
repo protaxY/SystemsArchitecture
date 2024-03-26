@@ -18,6 +18,10 @@ namespace database
             std::string _login;
             std::string _password;
 
+            static std::string HashPassword(const std::string &password);
+            void HashPassword();
+            void RemovePassword();
+
         public:
             static User fromJSON(const Poco::JSON::Object::Ptr &json, const bool skipId = false);
             Poco::JSON::Object::Ptr toJSON();
@@ -42,10 +46,10 @@ namespace database
             std::string &password();
 
             void Save();
-            static std::optional<long> Update(std::string &login, const Poco::JSON::Object::Ptr &json);
+            static std::optional<long> Update(std::string &login, std::string &oldHashedPassword, const Poco::JSON::Object::Ptr &json);
             static std::optional<User> SearchByLogin(std::string &login);
             static std::vector<User> SearchByFirstLastName(std::string &firstName, std::string &lastName);
-            static std::optional<long> Delete(std::string &login);
+            static std::optional<long> Delete(std::string &login, std::string &password);
     };
 } // namespace database
 

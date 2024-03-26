@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-const Poco::RegularExpression UserHandler::userLoginRegEx("\\/user\\/\\d+$");
+const Poco::RegularExpression UserHandler::_userLoginRegEx("\\/user\\/[^\\/]+$");
 
 std::string UserHandler::getUserLoginFromRegEx(std::string &match)
 {
@@ -111,7 +111,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         }
 
         // получить пользователя по логину
-        else if (userLoginRegEx.match(uri.getPath())
+        else if (_userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             std::string path = uri.getPath();
             std::string login = getUserLoginFromRegEx(path);
@@ -195,7 +195,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         }
         
         // удалить пользователя по ID
-        else if (userLoginRegEx.match(uri.getPath())
+        else if (_userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_DELETE){
             std::string path = uri.getPath();
             std::string login = getUserLoginFromRegEx(path);
@@ -217,7 +217,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 root->set("type", "/errors/not_found");
                 root->set("title", "Internal exception");
                 root->set("status", "404");
-                root->set("detail", "user ot found");
+                root->set("detail", "user ot found or password is incorrect");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -226,7 +226,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         }
 
         // обновить информацию о пользователе
-        else if (userLoginRegEx.match(uri.getPath())
+        else if (_userLoginRegEx.match(uri.getPath())
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT){
             std::string path = uri.getPath();
             std::string login = getUserLoginFromRegEx(path);
@@ -278,7 +278,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                         root->set("type", "/errors/bad_request");
                         root->set("title", "Internal exception");
                         root->set("status", "404");
-                        root->set("detail", "user not found");
+                        root->set("detail", "user not found or password is incorrect");
                         root->set("instance", "/user");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);
