@@ -4,9 +4,7 @@ RUN sudo apt-get update &&\
     sudo apt-get install -y git python3 pip iputils-ping gcc-12 libpq-dev postgresql-client wrk libssl-dev zlib1g-dev librdkafka-dev mysql-client libmysqlclient-dev libboost-all-dev\
     && sudo apt-get clean
 
-RUN git clone https://github.com/pocoproject/poco.git
-# RUN git clone https://gitlab.com/systemsarchitecture/poco.git
-# RUN git clone --depth 1 -b poco-1.12.4-release https://github.com/pocoproject/poco.git
+RUN git clone --depth 1 -b poco-1.12.4-release https://github.com/pocoproject/poco.git
 
 RUN cd poco &&\
     mkdir cmake-build &&\
@@ -17,6 +15,8 @@ RUN cd poco &&\
     cd && rm poco/* -rf 
 
 RUN ldconfig
+
+RUN pip install faker psycopg2
 
 WORKDIR /opt/arch
 

@@ -9,10 +9,7 @@
 #include <Poco/JSON/Parser.h>
 
 class UserHandler : public Poco::Net::HTTPRequestHandler{
-    private:
-        const static Poco::RegularExpression _userLoginRegEx;
-        static std::string getUserLoginFromRegEx(std::string &match);
-        
+    private:       
         Poco::JSON::Parser _jsonParser;
 
     public:
