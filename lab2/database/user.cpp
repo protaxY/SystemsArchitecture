@@ -271,6 +271,7 @@ namespace database
 
             select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE login=$1",
                             Poco::Data::Keywords::into(user.id()),
+                            Poco::Data::Keywords::into(user.first_name()),
                             Poco::Data::Keywords::into(user.last_name()),
                             Poco::Data::Keywords::into(user.email()),
                             Poco::Data::Keywords::into(user.title()),
@@ -312,12 +313,13 @@ namespace database
             lastName += "%";
 
             select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users WHERE first_name LIKE $1 AND last_name LIKE $2",
-                            Poco::Data::Keywords::into(user._id),
-                            Poco::Data::Keywords::into(user._last_name),
-                            Poco::Data::Keywords::into(user._email),
-                            Poco::Data::Keywords::into(user._title),
-                            Poco::Data::Keywords::into(user._login),
-                            Poco::Data::Keywords::into(user._password),
+                            Poco::Data::Keywords::into(user.id()),
+                            Poco::Data::Keywords::into(user.first_name()),
+                            Poco::Data::Keywords::into(user.last_name()),
+                            Poco::Data::Keywords::into(user.email()),
+                            Poco::Data::Keywords::into(user.title()),
+                            Poco::Data::Keywords::into(user.login()),
+                            Poco::Data::Keywords::into(user.password()),
                             Poco::Data::Keywords::use(firstName),
                             Poco::Data::Keywords::use(lastName),
                             Poco::Data::Keywords::range(0, 1);
@@ -369,6 +371,46 @@ namespace database
             }
             else
                 return {};
+        }
+        catch (Poco::Data::PostgreSQL::ConnectionException &e)
+        {
+            std::cout << "connection:" << e.what() << std::endl;
+            throw;
+        }
+        catch (Poco::Data::PostgreSQL::StatementException &e)
+        {
+            std::cout << "statement:" << e.what() << std::endl;
+            throw;
+        }
+    }
+
+    std::vector<User> User::GetAllUsers()
+    {
+        try
+        {
+            Poco::Data::Session session = database::Database::get().create_session();
+            Poco::Data::Statement select_stmt(session);
+
+            std::vector<User> users;
+            User user;
+
+            select_stmt << "SELECT id, first_name, last_name, email, title, login, password FROM users",
+                            Poco::Data::Keywords::into(user.id()),
+                            Poco::Data::Keywords::into(user.first_name()),
+                            Poco::Data::Keywords::into(user.last_name()),
+                            Poco::Data::Keywords::into(user.email()),
+                            Poco::Data::Keywords::into(user.title()),
+                            Poco::Data::Keywords::into(user.login()),
+                            Poco::Data::Keywords::into(user.password()),
+                            Poco::Data::Keywords::range(0, 1);
+
+            while (!select_stmt.done())
+            {
+                if (select_stmt.execute())
+                    user.RemovePassword();
+                    users.push_back(user);
+            }
+            return users;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
         {

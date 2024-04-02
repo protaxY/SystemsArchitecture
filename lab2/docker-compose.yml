@@ -1,0 +1,54 @@
+version: '3.2'
+
+services:
+  arch:
+    tty: true
+    container_name: arch
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_LOGIN=stud
+      - DB_PASSWORD=stud
+      - DB_DATABASE=archdb
+
+    # количество строк, которое будет сгенерированно при запуске
+    # command: python3 lab2/gen.py 20
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+    networks:
+      - arch-network
+
+  db:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=stud
+      - POSTGRES_PASSWORD=stud
+      - PGDATA=/data/postgres
+      - POSTGRES_DB=archdb
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - arch-network
+
+volumes:
+  db:
+
+networks:
+  arch-network:
+    driver: "bridge"
+    external: false

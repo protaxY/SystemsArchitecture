@@ -62,6 +62,12 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "strstream": "cpp",
+        "bitset": "cpp",
+        "complex": "cpp",
+        "iomanip": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }

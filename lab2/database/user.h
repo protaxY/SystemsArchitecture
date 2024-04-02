@@ -49,7 +49,8 @@ namespace database
             static std::optional<User> SearchByLogin(std::string &login);
             static std::vector<User> SearchByFirstLastName(std::string firstName, std::string lastName);
             static std::optional<long> Delete(std::string &login, std::string &password);
-            
+            static std::vector<User> GetAllUsers();
+
             static std::string HashPassword(const std::string &password);
     };
 } // namespace database

@@ -102,41 +102,75 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             return;
         }
 
-        // получить пользователя по логину
+        // получить пользователя по логину или получить всех пользователей
         else if (uri.getPath() == "/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             std::string path = uri.getPath();
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
+            bool isLoginProviuded = false;
             std::string login;
             for (std::pair<std::string, std::string> pair : query)
-                if (pair.first == "login")
+                if (pair.first == "login"){
                     login = pair.second;
+                    isLoginProviuded = true;
+                }
 
-            std::optional<database::User> user = database::User::SearchByLogin(login);
+            if (isLoginProviuded){
+                std::optional<database::User> user = database::User::SearchByLogin(login);
 
-            if (user){
+                if (user){
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(user->toJSON(), ostr);
+                }
+                else
+                {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("status", "404");
+                    root->set("detail", "user not found or login not provided");
+                    root->set("instance", "/user");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;
+                }
+
+                return;
+            }
+            else
+            {
+                std::vector<database::User> users = database::User::GetAllUsers();
+
+                if (users.size() == 0){
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("status", "404");
+                    root->set("detail", "users not found");
+                    root->set("instance", "/user/search");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;
+                }
+
+                Poco::JSON::Array jsonUserArray;
+                for (database::User user : users){
+                    jsonUserArray.add(user.toJSON());
+                }
+
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(user->toJSON(), ostr);
-            }
-            else
-            {
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "404");
-                root->set("detail", "user not found or login not provided");
-                root->set("instance", "/user");
-                std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(root, ostr);
-                return;
-            }
 
-            return;
+                Poco::JSON::Stringifier::stringify(jsonUserArray, ostr);
+            }
         }
 
         // поиск по маске фамилии и имени
