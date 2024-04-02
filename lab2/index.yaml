@@ -9,17 +9,16 @@ servers:
 paths:
   /user:
     get:
-      summary: Получить информацию о пользователе по логину
+      summary: Получить информацию о пользователе по логину или информацию о всех пользователях
       parameters:
       - name: login
-        description: Логин пользователя
+        description: Логин пользователя (если не указан, то в ответе будет информацию обо всех пользователях)
         in: query
-        required: true
         schema:
           type: string
       responses:
         '200':
-          description: Информация о найденом пользователе
+          description: Информация о найденом пользователе или, если не указан логин, список всех пользователей
           content:
             application/json:
               schema:
@@ -174,29 +173,29 @@ paths:
 
   /user/search:
     get:
-      summary: Получить список информации о каджом пользователе, удовлетворяющем маске имени и фамилии
+      summary: Получить информацю о пользователях по префиксам имени и фамилии
       parameters:
       - name: first_name
-        description: Имя
+        description: Префикс имени
         in: query
         required: true
         schema:
           type: string
       - name: last_name
-        description: Фамилия
+        description: Префикс фамилии
         in: query
         required: true
         schema:
           type: string
       responses:
         '200':
-          description: Список пользователей, удовлетворяющих маске
+          description: Список пользователей, удовлетворяющих префиксам
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/users'
         404: 
-          description: Пользователей, удовлетворяющих маске не найдено
+          description: Пользователей, удовлетворяющих префиксам не найдено
           content:
             application/json:
               schema:

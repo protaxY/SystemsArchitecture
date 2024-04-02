@@ -4,7 +4,7 @@ import os
 from faker import Faker
 import psycopg2
 
-if len(sys.argv == 2):
+if len(sys.argv) == 2:
     rows_number = int(sys.argv[1])
 else:
     rows_number = 10
@@ -21,6 +21,8 @@ except:
 
 with conn.cursor() as curs:
     try:
+        curs.execute('DROP TABLE IF EXISTS users')
+        
         curs.execute('CREATE TABLE IF NOT EXISTS users (id SERIAL, '
                     'first_name VARCHAR(256) NOT NULL, '
                     'last_name VARCHAR(256) NOT NULL, '
