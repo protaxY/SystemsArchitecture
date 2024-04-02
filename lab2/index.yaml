@@ -89,7 +89,7 @@ paths:
         schema:
           type: string
       - name: password
-        description: Пароль обновляемого пользователя
+        description: Пароль обновляемого пользователя (для сгенерированных пользователей пароль всегда password)
         in: query
         required: true
         schema:
@@ -146,7 +146,7 @@ paths:
         schema:
           type: string
       - name: password
-        description: Пароль удаляемого пользователя
+        description: Пароль удаляемого пользователя (для сгенерированных пользователей пароль всегда password)
         in: query
         required: true
         schema:
