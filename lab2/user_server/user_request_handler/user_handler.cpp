@@ -178,15 +178,20 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
+            bool isFirstNameProvided = false, isLastNameProvided = false;  
             std::string first_name, last_name;
             for (std::pair<std::string, std::string> pair : query){
-                if (pair.first == "first_name")
+                if (pair.first == "first_name"){
+                    isFirstNameProvided = true;
                     first_name = pair.second;
-                else if (pair.first == "last_name")
+                }
+                else if (pair.first == "last_name"){
+                    isLastNameProvided = true;
                     last_name = pair.second;
+                }
             }
 
-            if (!first_name.empty() && !last_name.empty()){
+            if (isFirstNameProvided && isLastNameProvided){
                 std::vector<database::User> users = database::User::SearchByFirstLastName(first_name, last_name);
 
                 if (users.size() == 0){

@@ -14,8 +14,8 @@ services:
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
 
-    # количество строк, которое будет сгенерированно при запуске
-    # command: python3 lab2/gen.py 20
+    # скрипт пересоздаст таблицу users и добавит в нее заданное количетсво сгенерированных строк
+    command: python3 lab2/gen.py 10
     depends_on:
       db:
         condition: service_healthy
