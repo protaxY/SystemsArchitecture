@@ -18,6 +18,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     ports:
       - 8080:8080
     networks:
@@ -53,8 +55,22 @@ services:
     networks:
       - arch-network
 
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    restart: on-failure
+    networks:
+      - arch-network
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+
 volumes:
   db:
+  mongodb:
 
 networks:
   arch-network:

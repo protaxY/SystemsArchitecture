@@ -45,7 +45,11 @@
 				"ms-python.vscode-pylance",
 				"ms-azuretools.vscode-docker",
 				"ms-vscode.cpptools-extension-pack",
-				"ckolkman.vscode-postgres"
+				"ckolkman.vscode-postgres",
+				"mongodb.mongodb-vscode",
+				"42crunch.vscode-openapi",
+				"systemticks.c4-dsl-extension",
+				"humao.rest-client"
 			]
 		}
 	}

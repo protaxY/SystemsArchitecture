@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
+void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {
     try
     {      
@@ -18,7 +18,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         if (uri.getPath() == "/user"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
             
-            Poco::Dynamic::Var json1 = UserHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var json1 = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
             
             if (json->has("first_name") && json->has("last_name") && json->has("email") && json->has("title") && json->has("login") && json->has("password")){
@@ -285,7 +285,7 @@ void UserHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                     password = pair.second;
             }
             
-            Poco::Dynamic::Var json1 = UserHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var json1 = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
             
             if (json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password")){
