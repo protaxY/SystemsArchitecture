@@ -13,8 +13,8 @@ namespace database{
             std::unique_ptr<Poco::Data::SessionPool> _pool;
             Database();
         public:
-            static Database& get();
             void CreateTableIfNotExists();
+            static Database& get();
             Poco::Data::Session create_session();
     };
 }

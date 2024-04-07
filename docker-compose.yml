@@ -15,6 +15,10 @@ services:
       - DB_LOGIN=stud
       - DB_PASSWORD=stud
       - DB_DATABASE=archdb
+
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=arch
     depends_on:
       db:
         condition: service_healthy
@@ -63,6 +67,7 @@ services:
       - arch-network
     volumes:
       - mongodb:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
       - '27017:27017'
     healthcheck:
