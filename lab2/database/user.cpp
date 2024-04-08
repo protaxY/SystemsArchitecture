@@ -107,7 +107,7 @@ namespace database
         return _password;
     }
 
-    long User::get_id() const
+    const long &User::get_id() const
     {
         return _id;
     }

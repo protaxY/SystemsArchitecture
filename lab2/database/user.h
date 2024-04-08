@@ -28,7 +28,7 @@ namespace database
             static bool IsNameValid(const std::string &name, std::string &reason);
             static bool IsEmailValid(const std::string &email, std::string &reason);
 
-            long              &get_id() const;
+            const long        &get_id() const;
             const std::string &get_first_name() const;
             const std::string &get_last_name() const;
             const std::string &get_email() const;
