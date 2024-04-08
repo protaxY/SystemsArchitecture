@@ -24,7 +24,7 @@ namespace database{
             static MongoDatabase& get();
             Poco::Data::Session create_session();
             void saveDocument(const std::string &collection, Poco::MongoDB::Document &document);
-            void updateDocument(const std::string &collection, Poco::MongoDB::Document &document);
+            void updateDocument(const std::string &collection, Poco::MongoDB::Document &selectDocument, Poco::MongoDB::Document &updateDocument);
             Poco::MongoDB::Document::Vector getDocuments(const std::string &collection, Poco::MongoDB::Document &document);
             long countDocuments(const std::string& collection, Poco::MongoDB::Document &document);
             void deleteDocument(const std::string &collection, Poco::MongoDB::Document &document);

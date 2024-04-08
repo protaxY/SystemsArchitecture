@@ -41,9 +41,9 @@ namespace database
             void Save();
             static std::optional<Message> GetMessageById(long &id);
             static std::vector<Message> GetAllMessages();
-            // static std::optional<Message> GetDialogMessages();
             static std::vector<Message> GetUserMessages(long &userId);
-            static void UpdateMessage(long &id, Message &updateMessage);
+            static std::vector<Message> GetDialogMessages(long &firstUserId, long &secondUserId);
+            static void UpdateMessage(long &id, std::string &text_content);
             static void DeleteMessage(long &id);
     };
 } // namespace database

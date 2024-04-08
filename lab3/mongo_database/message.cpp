@@ -6,6 +6,7 @@
 #include <Poco/MongoDB/ObjectId.h>
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/DateTimeParser.h>
+#include <Poco/MongoDB/Array.h>
 
 namespace database
 {
@@ -42,11 +43,11 @@ namespace database
     void Message::Save()
     {
         Poco::MongoDB::Document document;
-        document.add<long>("id", id());
-        document.add<long>("sender_id", sender_id());
-        document.add<long>("receiver_id", receiver_id());
-        document.add<std::string>("text_content", text_content());
-        document.add<std::string>("send_time", Poco::DateTimeFormatter::format(get_send_time(), timeFormat));
+        document.add("id", id());
+        document.add("sender_id", sender_id());
+        document.add("receiver_id", receiver_id());
+        document.add("text_content", text_content());
+        document.add("send_time", Poco::DateTimeFormatter::format(get_send_time(), timeFormat));
 
         MongoDatabase::get().saveDocument(collectionName, document);
     }
@@ -54,7 +55,7 @@ namespace database
     std::optional<Message> Message::GetMessageById(long &id)
     {
         Poco::MongoDB::Document document;
-        document.add<long>("id", id);
+        document.add("id", id);
 
         Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
         Poco::MongoDB::Document responseDocument;
@@ -102,23 +103,108 @@ namespace database
 
     std::vector<Message> Message::GetUserMessages(long &userId)
     {
-        // Poco::MongoDB::Document document;
+        Poco::MongoDB::Document document;
         
-        
-        // document.add<long>("sender_id", userId);
+        Poco::MongoDB::Document::Ptr senderIdDocPtr = new Poco::MongoDB::Document;
+        senderIdDocPtr->add("sender_id", userId);
 
-        // Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
+        Poco::MongoDB::Document::Ptr receiverIdDocPtr = new Poco::MongoDB::Document;
+        receiverIdDocPtr->add("receiver_id", userId);
+
+        Poco::MongoDB::Array::Ptr matchFieldsArrPtr = new Poco::MongoDB::Array;
+        matchFieldsArrPtr->add(senderIdDocPtr);
+        matchFieldsArrPtr->add(receiverIdDocPtr);
+
+        document.add("$and", matchFieldsArrPtr);
+
+        Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
+
+        std::vector<Message> messages;
+        for (Poco::MongoDB::Document::Ptr document : responseDocuments){
+            Message message;
+            message.id() = document->get<long>("id");
+            message.sender_id() = document->get<long>("sender_id");
+            message.receiver_id() = document->get<long>("receiver_id");
+            message.text_content() = document->get<std::string>("text_content");
+
+            const std::string send_time = document->get<std::string>("send_time");
+            int timeZoneDifferential = timeZoneDifferential;
+            message.send_time() = Poco::DateTimeParser::parse(timeFormat, send_time, timeZoneDifferential);
+            
+            messages.push_back(message);
+        }
+
+        return messages;
     }
 
-    void Message::UpdateMessage(long &id, Message &updateMessage)
+    std::vector<Message> Message::GetDialogMessages(long &firstUserId, long &secondUserId)
     {
         Poco::MongoDB::Document document;
         
-        document.add("sender_id", updateMessage.get_sender_id());
-        document.add("receiver_id", updateMessage.get_receiver_id());
-        document.add("text_content", updateMessage.get_text_content());
+        Poco::MongoDB::Document::Ptr senderIdDocPtr = new Poco::MongoDB::Document;
+        senderIdDocPtr->add("sender_id", firstUserId);
+        Poco::MongoDB::Document::Ptr receiverIdDocPtr = new Poco::MongoDB::Document;
+        receiverIdDocPtr->add("receiver_id", secondUserId);
 
-        MongoDatabase::get().updateDocument(collectionName, document);
+        Poco::MongoDB::Array::Ptr firstSecondArrPtr = new Poco::MongoDB::Array;
+        firstSecondArrPtr->add(senderIdDocPtr);
+        firstSecondArrPtr->add(receiverIdDocPtr);
+
+        Poco::MongoDB::Document::Ptr andFirstSecondDocPtr = new Poco::MongoDB::Document;
+        andFirstSecondDocPtr->add("$and", firstSecondArrPtr);
+
+
+        Poco::MongoDB::Document::Ptr senderIdDocPtr2 = new Poco::MongoDB::Document;
+        senderIdDocPtr2->add("sender_id", secondUserId);
+        Poco::MongoDB::Document::Ptr receiverIdDocPtr2 = new Poco::MongoDB::Document;
+        receiverIdDocPtr2->add("receiver_id", firstUserId);
+
+        Poco::MongoDB::Array::Ptr secondFirstArrPtr = new Poco::MongoDB::Array;
+        secondFirstArrPtr->add(senderIdDocPtr2);
+        secondFirstArrPtr->add(receiverIdDocPtr2);
+
+        Poco::MongoDB::Document::Ptr andSecondFirstDocPtr = new Poco::MongoDB::Document;
+        andSecondFirstDocPtr->add("$and", secondFirstArrPtr);
+
+        
+        Poco::MongoDB::Array::Ptr orArrPtr = new Poco::MongoDB::Array;
+        orArrPtr->add(andFirstSecondDocPtr);
+        orArrPtr->add(andSecondFirstDocPtr);
+
+        document.add("$or", orArrPtr);
+
+        std::string a = document.toString();
+
+        Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
+
+        std::vector<Message> messages;
+        for (Poco::MongoDB::Document::Ptr document : responseDocuments){
+            Message message;
+            message.id() = document->get<long>("id");
+            message.sender_id() = document->get<long>("sender_id");
+            message.receiver_id() = document->get<long>("receiver_id");
+            message.text_content() = document->get<std::string>("text_content");
+
+            const std::string send_time = document->get<std::string>("send_time");
+            int timeZoneDifferential = timeZoneDifferential;
+            message.send_time() = Poco::DateTimeParser::parse(timeFormat, send_time, timeZoneDifferential);
+            
+            messages.push_back(message);
+        }
+
+        return messages;
+    }
+
+    void Message::UpdateMessage(long &id, std::string &text_content)
+    {
+        Poco::MongoDB::Document selectorDocument;
+
+        Poco::MongoDB::Document::Ptr setDocument = new Poco::MongoDB::Document();
+        setDocument->add("text_content", text_content);
+        Poco::MongoDB::Document updateDocument;
+        updateDocument.add("$set", setDocument);
+
+        MongoDatabase::get().updateDocument(collectionName, selectorDocument, updateDocument);
     }
 
     void Message::DeleteMessage(long &id)

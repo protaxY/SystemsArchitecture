@@ -12,23 +12,6 @@
 
 int main(int argc, char*argv[]){
 
-    // Poco::MongoDB::Database db("arch");
-
-    // Poco::MongoDB::Connection connection;
-
-    // std::string host = "mongodb";
-    // int port = 27017;
-
-    // connection.connect(host.c_str(), port);
-
-    // Poco::SharedPtr<Poco::MongoDB::QueryRequest> createRequest = db.createCommand();
-
-    // createRequest->selector().add("create", "messages3");
-
-    // connection.sendRequest(*createRequest);
-
-    // // Poco::MongoDB::QueryRequest::send()
-
     MessageServerApplication app;
     return app.run(argc, argv);
 

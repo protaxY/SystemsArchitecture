@@ -51,14 +51,17 @@ namespace database{
         }
     }
 
-    void MongoDatabase::updateDocument(const std::string &collection, Poco::MongoDB::Document &document)
+    void MongoDatabase::updateDocument(const std::string &collection, Poco::MongoDB::Document &selectDocument, Poco::MongoDB::Document &updateDocument)
     {
         try
         {
             Poco::SharedPtr<Poco::MongoDB::UpdateRequest> updateRequest = _database.createUpdateRequest(collection);
-            Poco::MongoDB::Document &updateDocument = updateRequest->update();
-            updateDocument = document;
+
+            updateRequest->selector() = selectDocument;
+            updateRequest->update() = updateDocument;
+
             _connection.sendRequest(*updateRequest);
+            // _connection.sendRequest(*updateRequest);
         }
         catch (std::exception &ex)
         {
@@ -73,17 +76,12 @@ namespace database{
     {
         try
         {
-            // Poco::SharedPtr<Poco::MongoDB::QueryRequest> queryRequest = _database.createQueryRequest(collection);
-
-
-
-            Poco::SharedPtr<Poco::MongoDB::QueryRequest> queryRequest = _database.createQueryRequest("messages");
+            Poco::SharedPtr<Poco::MongoDB::QueryRequest> queryRequest = _database.createQueryRequest(collection);
             Poco::MongoDB::Document &queryDocument = queryRequest->selector();
             queryDocument = document;
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*queryRequest, response);
-
-            std::string a = document.toString();
+            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
 
             std::vector<std::string> result;
             for (auto doc : response.documents())
@@ -98,6 +96,8 @@ namespace database{
             if (!lastError.empty())
                 std::cout << "mongodb Last Error: " << lastError << std::endl;
         }
+
+        return Poco::MongoDB::Document::Vector();
     }
 
     long MongoDatabase::countDocuments(const std::string &collection, Poco::MongoDB::Document &document)
