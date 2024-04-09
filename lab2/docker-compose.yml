@@ -15,7 +15,7 @@ services:
       - DB_DATABASE=archdb
 
     # скрипт пересоздаст таблицу users и добавит в нее заданное количетсво сгенерированных строк
-    command: python3 lab2/gen.py 10
+    entrypoint: /bin/sh -c "lab2/start_and_gen.sh 2"
     depends_on:
       db:
         condition: service_healthy

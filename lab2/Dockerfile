@@ -23,4 +23,4 @@ WORKDIR /opt/arch
 
 RUN cmake -S ./lab2 -B ./lab2/build && cd ./lab2/build && make
 
-ENTRYPOINT ["lab2/build/app"]
+# ENTRYPOINT ["lab2/build/app"]
