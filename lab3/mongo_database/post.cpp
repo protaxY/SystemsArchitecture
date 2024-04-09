@@ -11,7 +11,7 @@
 namespace database
 {
     const std::string Post::collectionName = "posts";
-    const std::string Post::timeFormat = "%Y %b %dd %H:%M:%S.%i %Z";
+    const std::string Post::timeFormat = "%Y %b %dd %H:%M:%S %Z";
     const int Post::timeZoneDifferential = 0;
     
     Post Post::fromJSON(const Poco::JSON::Object::Ptr &json)

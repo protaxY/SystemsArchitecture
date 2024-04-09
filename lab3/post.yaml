@@ -1,0 +1,214 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'SystemsArchitecture Lab3'
+  description: API взаимодеиствия с сервисом сообщений
+servers:
+  - url: http://localhost:8081
+    description: Docker compose server
+  - url: http://localhost:8080
+    description: Example server
+paths:
+  /post:
+    get:
+      summary: Получить информацию о записи по идентификатору или информацию о всех записях
+      parameters:
+      - name: id
+        description: Идентификатор записи (если не указан, то в ответе будет информацию обо всех записях)
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Информация о найденной записи или, если не указан идентификатор, список всех записей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        404:
+          description: Записи с таким идентификатором не существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Добавить информацию о новой записи
+      requestBody:
+        description: JSON, содержащий информацию о новой записи
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                author_id:
+                  type: integer
+                  example: 1
+                text_content:
+                  type: string
+                  example: 'some_text'
+      responses:
+        '200':
+          description: Идентификатор новой записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        400:
+          description: Не вся необходимая информация была предоставлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Обновить информацию о записи
+      parameters:
+      - name: id
+        description: Идентификатор обновляемой записи
+        in: query
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: JSON, содержащий обновленную информацию о записи
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text_content:
+                  type: string
+                  example: 'new_text'
+      responses:
+        '200':
+          description: Идентификатор обновленной записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        400:
+          description: Информация для обновления неполная
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Удалить информацию о записи
+      parameters:
+      - name: login
+        description: Идентификатор удаляемой записи
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Идентификатор удаленной записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+        400:
+          description: Недостает идентификатора записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /post/user:
+    get:
+      summary: Получить информацию о записях пользователя
+      parameters:
+      - name: id
+        description: Идентификатор пользователя
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Список записей, пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/posts'
+        400: 
+          description: Недостает идентификатора пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404: 
+          description: Для данного пользователя сообщений не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    post_id:
+      description: Идентификатор записи
+      type: integer
+    posts:
+      type: array
+      items:
+        $ref: '#/components/schemas/post'
+    post:
+      type: object
+      required:
+        - id
+        - author_id
+        - receiver_id
+        - send_time 
+      properties:
+        id:
+          $ref: '#/components/schemas/post_id'
+        author_id:
+          type: integer
+        text_content:
+          type: string
+        send_time:
+          type: string
+    Error:
+      type: object
+      required:
+        - detail
+        - instance
+        - status
+      properties:
+        detail:
+          description: Описание причины ошибки
+          type: string
+        instance:
+          description: Путь
+        status:
+          description: Код ошибки

@@ -10,9 +10,7 @@
 #include <iostream>
 
 void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
-{
-    std::cout << "post" << std::endl;
-    
+{   
     try
     {      
         Poco::URI uri(request.getURI());
@@ -22,7 +20,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             Poco::Dynamic::Var jsonParseResult = PoistHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = jsonParseResult.extract<Poco::JSON::Object::Ptr>();
 
-            if (json->has("id"), json->has("author_id") && json->has("text_content")){
+            if (json->has("id") && json->has("author_id") && json->has("text_content")){
                 database::Post post = database::Post::fromJSON(json);
 
                 post.Save();

@@ -10,9 +10,7 @@
 #include <iostream>
 
 void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
-{
-    std::cout << "message" << std::endl;
-    
+{   
     try
     {      
         Poco::URI uri(request.getURI());

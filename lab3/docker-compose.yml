@@ -12,7 +12,7 @@ services:
       - MONGO_PORT=27017
       - MONGO_DATABASE=arch
 
-    entrypoint: /bin/sh -c "lab3/message_app/start_and_gen.sh"
+    entrypoint: /bin/sh -c "lab3/start_and_gen_messages.sh 10 3"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -32,7 +32,7 @@ services:
       - MONGO_PORT=27017
       - MONGO_DATABASE=arch
 
-    entrypoint: /bin/sh -c "lab3/post_app/start_and_gen.sh"
+    entrypoint: /bin/sh -c "lab3/start_and_gen_posts.sh 10 3"
     depends_on:
       mongodb:
         condition: service_healthy

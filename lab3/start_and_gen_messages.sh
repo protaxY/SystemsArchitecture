@@ -2,4 +2,5 @@
 - MONGO_PORT=27017
 - MONGO_DATABASE=arch
 
-./lab3/post_app/build/app
+python3 lab3/gen_messages.py $1 $2
+./lab3/message_app/build/app

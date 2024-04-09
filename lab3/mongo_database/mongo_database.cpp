@@ -16,7 +16,7 @@ namespace database{
     void MongoDatabase::CreateCollection(const std::string &name)
     {
         Poco::SharedPtr<Poco::MongoDB::QueryRequest> createRequest = _database.createCommand();
-        createRequest->selector().add("create", "messages3");
+        createRequest->selector().add("create", name);
         _connection.sendRequest(*createRequest);
     }
 

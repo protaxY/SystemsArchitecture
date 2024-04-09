@@ -15,7 +15,7 @@ RUN cd poco &&\
 
 RUN ldconfig
 
-RUN pip install faker psycopg2-binary 
+RUN pip install faker pymongo
 
 ADD . /opt/arch/lab3
 

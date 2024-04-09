@@ -2,7 +2,7 @@ openapi: '3.0.0'
 info:
   version: '1.0.0'
   title: 'SystemsArchitecture Lab2'
-  description: API взаимодествия с сервисом пользователей
+  description: API взаимодеиствия с сервисом пользователей
 servers:
   - url: http://localhost:8080
     description: Example server
@@ -125,7 +125,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/user'
         400:
-          description: Пользователя с таким логином не существует или пароль не верен
+          description: Пользователя с таким логином не существует, или пароль не верен, или информация для обновления неполная 
           content:
             application/json:
               schema:
@@ -153,7 +153,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Идентификатор обновленного пользователя
+          description: Идентификатор удаленного пользователя
           content:
             application/json:
               schema:

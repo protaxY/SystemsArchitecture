@@ -11,7 +11,7 @@
 namespace database
 {
     const std::string Message::collectionName = "messages";
-    const std::string Message::timeFormat = "%Y %b %dd %H:%M:%S.%i %Z";
+    const std::string Message::timeFormat = "%Y %b %dd %H:%M:%S %Z";
     const int Message::timeZoneDifferential = 0;
     
     Message Message::fromJSON(const Poco::JSON::Object::Ptr &json)
@@ -86,6 +86,7 @@ namespace database
         std::vector<Message> messages;
         for (Poco::MongoDB::Document::Ptr document : responseDocuments){
             Message message;
+
             message.id() = document->get<long>("id");
             message.sender_id() = document->get<long>("sender_id");
             message.receiver_id() = document->get<long>("receiver_id");
