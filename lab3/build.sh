@@ -1,4 +1,5 @@
-cmake -S . -B build
-cd build
-make
-cd ..
+cd message_app
+./build.sh
+
+cd ../post_app
+./build.sh

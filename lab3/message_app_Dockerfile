@@ -17,8 +17,8 @@ RUN ldconfig
 
 RUN pip install faker psycopg2-binary 
 
-ADD . /opt/arch/lab2
+ADD . /opt/arch/lab3
 
 WORKDIR /opt/arch
 
-RUN cmake -S ./lab2 -B ./lab2/build && cd ./lab2/build && make
+RUN cmake -S ./lab3/message_app -B ./lab3/message_app/build && cd ./lab3/message_app/build && make

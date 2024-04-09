@@ -82,6 +82,7 @@ namespace database{
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*queryRequest, response);
             _connection.sendRequest(*queryRequest, response); // ??? странное поведение
+            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
 
             std::vector<std::string> result;
             for (auto doc : response.documents())

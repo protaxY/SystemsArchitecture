@@ -1,5 +1,5 @@
-#ifndef USEHANDLER_H
-#define USEHANDLER_H
+#ifndef MESSAGEHANDLER_H
+#define MESSAGEHANDLER_H
 
 #include <string>
 
@@ -16,4 +16,4 @@ class MessageHandler : public Poco::Net::HTTPRequestHandler{
         void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 };
 
-#endif // USEHANDLER_H
+#endif // MESSAGEHANDLER_H

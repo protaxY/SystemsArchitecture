@@ -1,5 +1,5 @@
-#ifndef USERSERVERAPP_H
-#define USERSERVERAPP_H
+#ifndef MESSAGESERVERAPP_H
+#define MESSAGESERVERAPP_H
 
 #include <string>
 #include <Poco/Util/ServerApplication.h>

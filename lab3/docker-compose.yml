@@ -1,0 +1,64 @@
+version: '3.2'
+
+services:
+  message_service:
+    tty: true
+    container_name: message_service
+    build:
+      context: .
+      dockerfile: message_app_Dockerfile
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=arch
+
+    entrypoint: /bin/sh -c "lab3/message_app/start_and_gen.sh"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+    networks:
+      - arch-network
+
+  post_service:
+    tty: true
+    container_name: post_service
+    build:
+      context: .
+      dockerfile: post_app_Dockerfile
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=arch
+
+    entrypoint: /bin/sh -c "lab3/post_app/start_and_gen.sh"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - 8081:8080
+    networks:
+      - arch-network
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    restart: on-failure
+    networks:
+      - arch-network
+    volumes:
+      - mongodb:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+
+volumes:
+  mongodb:
+
+networks:
+  arch-network:
+    driver: "bridge"
+    external: false

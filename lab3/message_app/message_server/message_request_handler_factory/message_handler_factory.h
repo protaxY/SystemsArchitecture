@@ -1,5 +1,5 @@
-#ifndef HTTPREQUESTFACTORY_H
-#define HTTPREQUESTFACTORY_H
+#ifndef HTTPMESSAGEREQUESTFACTORY_H
+#define HTTPMESSAGEREQUESTFACTORY_H
 
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 
@@ -12,4 +12,4 @@ public:
     Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest & request);
 };
 
-#endif
+#endif // HTTPMESSAGEREQUESTFACTORY_H
