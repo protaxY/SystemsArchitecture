@@ -330,6 +330,11 @@ namespace database
                     user.RemovePassword();
                     users.push_back(user);
             }
+            
+            if (users.size() == 1 && users[0].get_login() == ""){
+                return std::vector<User>();
+            }
+            
             return users;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
@@ -410,6 +415,11 @@ namespace database
                     user.RemovePassword();
                     users.push_back(user);
             }
+
+            if (users.size() == 1 && users[0].get_login() == ""){
+                return std::vector<User>();
+            }
+
             return users;
         }
         catch (Poco::Data::PostgreSQL::ConnectionException &e)
