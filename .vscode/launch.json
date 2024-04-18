@@ -6,7 +6,7 @@
     "configurations": [
 
         {
-            "name": "(gdb) User server",
+            "name": "(gdb) lab2 User server",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/lab2/build/app",
@@ -30,7 +30,7 @@
             ]
         },
         {
-            "name": "(gdb) Message server",
+            "name": "(gdb) lab3 Message server",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/lab3/message_app/build/app",
@@ -54,10 +54,34 @@
             ]
         },
         {
-            "name": "(gdb) Post server",
+            "name": "(gdb) lab3 Post server",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/lab3/post_app/build/app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) lab4 User server",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/lab4/user_app/build/app",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
