@@ -17,10 +17,10 @@ add_executable(${APP} main.cpp
                ../config/config.cpp 
                ../database/database.cpp
                ../database/user.cpp
+               ../auth_helper/auth_helper.cpp
                user_server/user_request_handler/user_handler.cpp
                user_server/user_request_handler_factory/user_handler_factory.cpp
-               user_server/user_server_application.cpp
-               user_server/user_auth_helper/user_auth_helper.cpp)
+               user_server/user_server_application.cpp)
 
 target_link_libraries(${APP} PRIVATE 
                       ${Poco_LIBRARIES}

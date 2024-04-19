@@ -1,6 +1,7 @@
 #include "message_handler.h"
 #include "../../../mongo_database/message.h"
 #include "../../../mongo_database/mongo_database.h"
+#include "../../../auth_helper/auth_helper.h"
 
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/URI.h>
@@ -13,6 +14,30 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 {   
     try
     {      
+        long user_id = -1;
+        std::string user_login;
+
+        std::string scheme;
+        std::string info;
+        request.getCredentials(scheme, info);
+
+        if (scheme == "Bearer"){
+            if (!AuthHelper::ExtractPayload(info, user_id, user_login)){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("type", "/errors/not_authorized");
+                root->set("title", "Internal exception");
+                root->set("status", "403");
+                root->set("detail", "user not authorized");
+                root->set("instance", "/post");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;                  
+            }
+        }
+        
         Poco::URI uri(request.getURI());
 
         if (uri.getPath() == "/message"
@@ -20,7 +45,9 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             Poco::Dynamic::Var jsonParseResult = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = jsonParseResult.extract<Poco::JSON::Object::Ptr>();
 
-            if (json->has("id"), json->has("sender_id") && json->has("receiver_id") && json->has("text_content")){
+            if (user_id != -1 && json->has("id") && json->has("receiver_id") && json->has("text_content")){
+                json->set("sender_id", user_id);
+
                 database::Message message = database::Message::fromJSON(json);
 
                 message.Save();
@@ -121,18 +148,9 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
         else if (uri.getPath() == "/message/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
-            Poco::URI::QueryParameters query = uri.getQueryParameters();
 
-            bool isUserIdProviuded = false;
-            long userId;
-            for (std::pair<std::string, std::string> pair : query)
-                if (pair.first == "id"){
-                    userId = std::stoi(pair.second);
-                    isUserIdProviuded = true;
-                }
-
-            if (isUserIdProviuded){
-                std::vector<database::Message> messages = database::Message::GetUserMessages(userId);
+            if (user_id != -1){
+                std::vector<database::Message> messages = database::Message::GetUserMessages(user_id);
 
                 if (messages.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
@@ -177,21 +195,17 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
-            bool isFirstUserIdProvided = false, isSecondUserIdProvided = false;
-            long firstUserId, secondUserId;
+            bool isSecondUserIdProvided = false;
+            long secondUserId;
             for (std::pair<std::string, std::string> pair : query){
-                if (pair.first == "first_user_id"){
-                    isFirstUserIdProvided = true;
-                    firstUserId = std::stoi(pair.second);
-                }
-                else if (pair.first == "second_user_id"){
+                if (pair.first == "second_user_id"){
                     isSecondUserIdProvided = true;
                     secondUserId = std::stoi(pair.second);
                 }
             }
 
-            if (isFirstUserIdProvided && isSecondUserIdProvided){
-                std::vector<database::Message> messages = database::Message::GetDialogMessages(firstUserId, secondUserId);
+            if (user_id != -1 && isSecondUserIdProvided){
+                std::vector<database::Message> messages = database::Message::GetDialogMessages(user_id, secondUserId);
 
                 if (messages.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);

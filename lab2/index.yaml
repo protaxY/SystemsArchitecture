@@ -57,6 +57,9 @@ paths:
                 title:
                   type: string
                   example: 'michael36'
+                login:
+                  type: string
+                  example: 'login'
                 password:
                   type: string
                   example: 'password'

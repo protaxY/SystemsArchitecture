@@ -1,6 +1,7 @@
 #include "post_handler.h"
 #include "../../../mongo_database/post.h"
 #include "../../../mongo_database/mongo_database.h"
+#include "../../../auth_helper/auth_helper.h"
 
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/URI.h>
@@ -13,6 +14,30 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
 {   
     try
     {      
+        long user_id = -1;
+        std::string user_login;
+
+        std::string scheme;
+        std::string info;
+        request.getCredentials(scheme, info);
+
+        if (scheme == "Bearer"){
+            if (!AuthHelper::ExtractPayload(info, user_id, user_login)){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("type", "/errors/not_authorized");
+                root->set("title", "Internal exception");
+                root->set("status", "403");
+                root->set("detail", "user not authorized");
+                root->set("instance", "/post");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;                  
+            }
+        }
+        
         Poco::URI uri(request.getURI());
 
         if (uri.getPath() == "/post"
@@ -20,7 +45,8 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             Poco::Dynamic::Var jsonParseResult = PoistHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = jsonParseResult.extract<Poco::JSON::Object::Ptr>();
 
-            if (json->has("id") && json->has("author_id") && json->has("text_content")){
+            if (user_id != -1 && json->has("id") && json->has("text_content")){
+                json->set("author_id", user_id);
                 database::Post post = database::Post::fromJSON(json);
 
                 post.Save();
@@ -121,18 +147,9 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
 
         else if (uri.getPath() == "/post/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
-            Poco::URI::QueryParameters query = uri.getQueryParameters();
 
-            bool isUserIdProviuded = false;
-            long userId;
-            for (std::pair<std::string, std::string> pair : query)
-                if (pair.first == "id"){
-                    userId = std::stoi(pair.second);
-                    isUserIdProviuded = true;
-                }
-
-            if (isUserIdProviuded){
-                std::vector<database::Post> posts = database::Post::GetUserPosts(userId);
+            if (user_id != -1){
+                std::vector<database::Post> posts = database::Post::GetUserPosts(user_id);
 
                 if (posts.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);

@@ -1,6 +1,6 @@
 #include "user_handler.h"
 #include "../../../database/user.h"
-#include "../user_auth_helper/user_auth_helper.h"
+#include "../../../auth_helper/auth_helper.h"
 
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/URI.h>
@@ -382,10 +382,10 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             std::string login, password;
             if (scheme == "Basic")
             {
-                UserAuthHelper::DecodeIdentity(info, login, password);
+                AuthHelper::DecodeIdentity(info, login, password);
                 
                 if (std::optional<long> id = database::User::Auth(login, password)){
-                    std::string token = UserAuthHelper::GenerateTocken(*id, login);
+                    std::string token = AuthHelper::GenerateToken(*id, login);
 
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
