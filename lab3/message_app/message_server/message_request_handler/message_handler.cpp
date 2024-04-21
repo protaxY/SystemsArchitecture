@@ -392,7 +392,7 @@ bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::str
     return isOK;
 }
 
-bool CheckGetDialogData(const bool &isFirstUserIdProvided, const bool &isSecondUserIdProvided, std::string &reason){
+bool MessageHandler::CheckGetDialogData(const bool &isFirstUserIdProvided, const bool &isSecondUserIdProvided, std::string &reason){
     reason = "";
     bool isOK = true;
     
