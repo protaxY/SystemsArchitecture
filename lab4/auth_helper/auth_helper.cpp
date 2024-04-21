@@ -39,27 +39,41 @@ std::string AuthHelper::GenerateToken(const long &id, const std::string &login)
     return signer.sign(token, Poco::JWT::Signer::ALGO_RS256);
 }
 
-bool AuthHelper::ExtractPayload(const std::string &token, long &id, std::string &login)
+bool AuthHelper::ExtractPayload(const std::string &token, long &id, std::string &login, std::string &reason)
 {
+    bool isOK = true;
+    reason = "";
+
     Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public"));
     Poco::JWT::Signer signer(RSAKeyPtr);
     signer.addAlgorithm(Poco::JWT::Signer::ALGO_RS256);
 
     try {
-        signer.verify(token);
-        
         Poco::JWT::Token jwtTToken = signer.verify(token);
 
-        if (jwtTToken.payload().has("login") && jwtTToken.payload().has("id")) {
-            id = jwtTToken.payload().getValue<long>("id");
-            login = jwtTToken.payload().getValue<std::string>("login");
-            return true;
+        if (!jwtTToken.payload().has("id")){
+            reason += "filed <id> in JWT-token payload is missing";
+            isOK = false;
         }
-        else {
-            return false;
+        if (jwtTToken.payload().has("id") && jwtTToken.payload().getValue<long>("id") <= 0){
+
         }
+        if (!jwtTToken.payload().has("login")){
+            if (!reason.empty())
+                reason += ", ";
+            reason += "filed <login> in JWT-token payload is missing";
+            isOK = false;
+        }
+
+        if (!isOK)
+            return isOK;
+        
+        id = jwtTToken.payload().getValue<long>("id");
+        login = jwtTToken.payload().getValue<std::string>("login");
+        return isOK;
     }
     catch (...) {
+        reason = "token verification failed";
         return false;
     }
     return true;

@@ -63,7 +63,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                         response.setContentType("application/json");
                         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                         root->set("status", "400");
-                        root->set("detail", "user with this login already exists");
+                        root->set("detail", "User with this login already exists");
                         root->set("instance", "/user");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -93,7 +93,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "user information is missing or incomplete");
+                root->set("detail", "User information is missing or incomplete");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -134,7 +134,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "user not found or login not provided");
+                    root->set("detail", "User not found or login not provided");
                     root->set("instance", "/user");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -153,7 +153,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "users not found");
+                    root->set("detail", "Users not found");
                     root->set("instance", "/user/search");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -201,7 +201,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "users not found");
+                    root->set("detail", "Users not found");
                     root->set("instance", "/user/search");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -227,7 +227,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "first name or last name mask is missing");
+                root->set("detail", "First name or last name mask is missing");
                 root->set("instance", "/user/search");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -268,7 +268,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "404");
-                root->set("detail", "user not found or login is not provided or password is incorrect");
+                root->set("detail", "User not found or login is not provided or password is incorrect");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -335,7 +335,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                         response.setContentType("application/json");
                         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                         root->set("status", "404");
-                        root->set("detail", "user not found or login is not provided or password is incorrect");
+                        root->set("detail", "User not found or login is not provided or password is incorrect");
                         root->set("instance", "/user");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -362,7 +362,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "user information is missing or incomplete");
+                root->set("detail", "User information is missing or incomplete");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -403,7 +403,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             root->set("type", "/errors/unauthorized");
             root->set("title", "Internal exception");
             root->set("status", "401");
-            root->set("detail", "not authorized");
+            root->set("detail", "Not authorized");
             root->set("instance", "/user/auth");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
@@ -417,7 +417,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
-            root->set("detail", "invalid path");
+            root->set("detail", "Invalid path");
             root->set("instance", "uri.getPath()");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
@@ -433,7 +433,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
-        root->set("detail", "invalid JSON");
+        root->set("detail", "Invalid JSON format");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -445,7 +445,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
-        root->set("detail", "unexpected error");
+        root->set("detail", "Unexpected error");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
