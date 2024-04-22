@@ -116,7 +116,7 @@ namespace database
         matchFieldsArrPtr->add(senderIdDocPtr);
         matchFieldsArrPtr->add(receiverIdDocPtr);
 
-        document.add("$and", matchFieldsArrPtr);
+        document.add("$or", matchFieldsArrPtr);
 
         Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
 

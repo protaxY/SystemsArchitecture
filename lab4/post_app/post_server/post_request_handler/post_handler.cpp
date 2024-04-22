@@ -24,12 +24,11 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
         }
         catch (...){
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
-            response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-            root->set("type", "/errors/not_authorized");
+            root->set("type", "/errors/unauthorized");
             root->set("title", "Internal exception");
-            root->set("status", "403");
+            root->set("status", "401");
             root->set("detail", "credentials are not provided");
             root->set("instance", "/post");
             std::ostream &ostr = response.send();
@@ -42,12 +41,11 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             try{
                 if (!AuthHelper::ExtractPayload(info, user_id, user_login, reason)){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                    root->set("type", "/errors/not_authorized");
+                    root->set("type", "/errors/unauthorized");
                     root->set("title", "Internal exception");
-                    root->set("status", "403");
+                    root->set("status", "401");
                     root->set("detail", "JWT-token processing failed: " + reason);
                     root->set("instance", "/post");
                     std::ostream &ostr = response.send();
@@ -57,7 +55,6 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             }
             catch(...){
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("type", "/errors/unauthorized");
@@ -113,7 +110,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Post information is missing or incomplete: " + reason);
+                root->set("detail", "post information is missing or incomplete: " + reason);
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -210,46 +207,32 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
         else if (uri.getPath() == "/post/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
 
-            if (user_id <= 0){
-                std::vector<database::Post> posts = database::Post::GetUserPosts(user_id);
+            std::vector<database::Post> posts = database::Post::GetUserPosts(user_id);
 
-                if (posts.size() == 0){
-                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                    response.setChunkedTransferEncoding(true);
-                    response.setContentType("application/json");
-                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                    root->set("status", "404");
-                    root->set("detail", "Posts not found");
-                    root->set("instance", "/post/user");
-                    std::ostream &ostr = response.send();
-                    Poco::JSON::Stringifier::stringify(root, ostr);
-                    return;
-                }
-
-                Poco::JSON::Array jsonUserArray;
-                for (database::Post post : posts){
-                    jsonUserArray.add(post.toJSON());
-                }
-
-                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                std::ostream &ostr = response.send();
-
-                Poco::JSON::Stringifier::stringify(jsonUserArray, ostr);
-            }
-            else{
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+            if (posts.size() == 0){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "400");
-                root->set("detail", "User id from JWT-token payload filed <id> is invalid");
+                root->set("status", "404");
+                root->set("detail", "posts not found");
                 root->set("instance", "/post/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
                 return;
             }
+
+            Poco::JSON::Array jsonUserArray;
+            for (database::Post post : posts){
+                jsonUserArray.add(post.toJSON());
+            }
+
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.setChunkedTransferEncoding(true);
+            response.setContentType("application/json");
+            std::ostream &ostr = response.send();
+
+            Poco::JSON::Stringifier::stringify(jsonUserArray, ostr);
         }
 
         else if (uri.getPath() == "/post"
@@ -286,7 +269,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Update data is missing or incomplete: " + reason);
+                root->set("detail", "update data is missing or incomplete: " + reason);
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -339,7 +322,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Query parametr <id> is missing");
+                root->set("detail", "query parametr <id> is missing");
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -356,7 +339,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
-            root->set("detail", "Invalid path");
+            root->set("detail", "invalid path");
             root->set("instance", "uri.getPath()");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
@@ -370,7 +353,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
-        root->set("detail", "Invalid JSON format");
+        root->set("detail", "invalid JSON format");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -382,7 +365,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
-        root->set("detail", "Unexpected error");
+        root->set("detail", "unexpected error");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
@@ -395,19 +378,19 @@ bool PoistHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::strin
     bool isOK = true;
     
     if (!(json->has("id")) || json->getValue<long>("id") <= 0){
-        reason += R"(filed <id> in JWT-token payload data is invalid)";
+        reason += "filed <id> in JWT-token payload data is invalid";
         isOK = false;
     }
     if (!(json->has("author_id"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <id> in JWT-token payload is invalid)";
+        reason += "filed <id> in JWT-token payload is invalid";
         isOK = false;
     }
     if (!(json->has("text_content"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <text_content> is missing in JSON body data)";
+        reason += "filed <text_content> is missing in JSON body data";
         isOK = false;
     }
     
@@ -420,19 +403,19 @@ bool PoistHandler::CheckUpdateData(const bool &isIdProvided, const long &id, con
     bool isOK = true;
     
     if (!isIdProvided){
-        reason += R"(query parametr <id> is missing)";
+        reason += "query parametr <id> is missing";
         isOK = false;
     }
     if (id < 0){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(query parametr <id> is invalid)";
+        reason += "query parametr <id> is invalid";
         isOK = false;
     }
     if (!(json->has("text_content"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <text_content> is missing in JSON body data)";
+        reason += "filed <text_content> is missing in JSON body data";
         isOK = false;
     }
     

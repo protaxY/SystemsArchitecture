@@ -42,7 +42,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "400");
-                    root->set("detail", "User with this login already exists");
+                    root->set("detail", "user with this login already exists");
                     root->set("instance", "/user");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -56,7 +56,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "User information is missing or incomplete: " + reason);
+                root->set("detail", "user information is missing or incomplete: " + reason);
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -97,7 +97,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "User not found");
+                    root->set("detail", "user not found");
                     root->set("instance", "/user");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -165,7 +165,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "Users not found");
+                    root->set("detail", "users not found");
                     root->set("instance", "/user/search");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -234,7 +234,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 }
                 else
                 {
-                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
@@ -265,21 +265,26 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         else if (uri.getPath() == "/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT){
             std::string path = uri.getPath();
-            std::string login;
-
             Poco::URI::QueryParameters query = uri.getQueryParameters();
-            std::string password;
+
+            bool isLoginProvided = false, isPasswordProvided = false;
+            std::string login, password;
             for (std::pair<std::string, std::string> pair : query){
-                if (pair.first == "login")
+                if (pair.first == "login"){
                     login = pair.second;
-                else if (pair.first == "password")
+                    isLoginProvided = true;
+                }
+                else if (pair.first == "password"){
                     password = pair.second;
+                    isPasswordProvided = true;
+                }
             }
             
             Poco::Dynamic::Var json1 = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
             
-            if (json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password")){
+            std::string reason;
+            if (CheckUpdateData(isLoginProvided, isPasswordProvided, json, reason)){
                 bool isValidUpdateUser = true;
                 std::string validateResult;
                 std::string reason;
@@ -315,12 +320,12 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     }
                     else
                     {
-                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
                         response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
                         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                        root->set("status", "404");
-                        root->set("detail", "User not found or login is not provided or password is incorrect");
+                        root->set("status", "400");
+                        root->set("detail", "login or password is incorrect");
                         root->set("instance", "/user");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -351,7 +356,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Uupdate request body must contain at leas one of this parameters: <first_name>, <last_name>, <email>, <title>, <password>");
+                root->set("detail", reason);
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -374,9 +379,9 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("type", "/errors/not_authorized");
+                root->set("type", "/errors/unauthorized");
                 root->set("title", "Internal exception");
-                root->set("status", "403");
+                root->set("status", "401");
                 root->set("detail", "credentials are not provided");
                 root->set("instance", "/user/auth");
                 std::ostream &ostr = response.send();
@@ -453,7 +458,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
-            root->set("detail", "Invalid path");
+            root->set("detail", "invalid path");
             root->set("instance", "uri.getPath()");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
@@ -469,7 +474,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
-        root->set("detail", "Invalid JSON format");
+        root->set("detail", "invalid JSON format");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
@@ -481,7 +486,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
-        root->set("detail", "Unexpected error");
+        root->set("detail", "unexpected error");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
@@ -495,7 +500,7 @@ bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::str
     bool isOK = true;
     
     if (!(json->has("first_name"))){
-        reason += R"(filed <first_name> is missing in JSON body data)";
+        reason += "filed <first_name> is missing in JSON body data";
         isOK = false;
     }
     else if (!database::User::IsNameValid(json->getValue<std::string>("first_name"), currentReason)){
@@ -508,7 +513,7 @@ bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::str
     if (!(json->has("last_name"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <last_name> is missing in JSON body data)";
+        reason += "filed <last_name> is missing in JSON body data";
         isOK = false;
     }
     else if (!database::User::IsNameValid(json->getValue<std::string>("last_name"), currentReason)){
@@ -521,7 +526,7 @@ bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::str
     if (!(json->has("email"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <email> is missing in JSON body data)";
+        reason += "filed <email> is missing in JSON body data";
         isOK = false;
     }
     else if (!database::User::IsNameValid(json->getValue<std::string>("email"), currentReason)){
@@ -534,19 +539,19 @@ bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::str
     if (!(json->has("title"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <title> is missing in JSON body data)";
+        reason += "filed <title> is missing in JSON body data";
         isOK = false;
     }
     if (!(json->has("login"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <login> is missing in JSON body data)";
+        reason += "filed <login> is missing in JSON body data";
         isOK = false;
     }
     if (!(json->has("password"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <password> is missing in JSON body data)";
+        reason += "filed <password> is missing in JSON body data";
         isOK = false;
     }
     
@@ -558,16 +563,41 @@ bool MessageHandler::CheckSearchByFirstLastName(const bool &isFirstNameProvided,
     bool isOK = true;
     
     if (!isFirstNameProvided){
-        reason += R"(query parametr <first_name> is not provided)";
+        reason += "query parametr <first_name> is not provided";
         isOK = false;
     }
     if (!isLastNameProvided){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(query parametr <last_name> is not provided)";
+        reason += "query parametr <last_name> is not provided";
         isOK = false;
     }
     
+    return isOK;
+}
+
+bool MessageHandler::CheckUpdateData(const bool &isLoginProvided, const bool &isPasswordProvided, const Poco::JSON::Object::Ptr &json, std::string &reason)
+{
+    reason = "";
+    bool isOK = true;
+    
+    if (!isLoginProvided){
+        reason += "query parametr <login> is not provided";
+        isOK = false;
+    }
+    if (!isPasswordProvided){
+        if (!reason.empty())
+            reason += ", ";
+        reason += "query parametr <password> is not provided";
+        isOK = false;
+    }
+    if (!(json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password"))){
+        if (!reason.empty())
+            reason += ", ";
+        reason += "JSON body data must contain at least one of these fields: <first_name>, <last_name>, <email>, <title>, <password>";
+        isOK = false;
+    }
+
     return isOK;
 }
 
@@ -576,13 +606,13 @@ bool MessageHandler::CheckDeleteData(const bool &isLoginProvided, const bool &is
     bool isOK = true;
     
     if (!isLoginProvided){
-        reason += R"(query parametr <login> is not provided)";
+        reason += "query parametr <login> is not provided";
         isOK = false;
     }
     if (!isPasswordProvided){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(query parametr <password> is not provided)";
+        reason += "query parametr <password> is not provided";
         isOK = false;
     }
     

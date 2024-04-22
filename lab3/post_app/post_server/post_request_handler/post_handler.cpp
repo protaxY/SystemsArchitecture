@@ -41,7 +41,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Post information is missing or incomplete: " + reason);
+                root->set("detail", "post information is missing or incomplete: " + reason);
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -62,19 +62,6 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                     id = std::stoi(pair.second);
                     isIdProviuded = true;
                 }
-
-            if (id < 0){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "400");
-                root->set("detail", "query parametr <id> is invalid");
-                root->set("instance", "/post");
-                std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(root, ostr);
-                return;
-            }
             
             if (isIdProviuded){
                 std::optional<database::Post> post = database::Post::GetPostById(id);
@@ -93,7 +80,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "Posts not found");
+                    root->set("detail", "posts not found");
                     root->set("instance", "/post");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -112,7 +99,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "Post not found");
+                    root->set("detail", "post not found");
                     root->set("instance", "/post");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -147,19 +134,6 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                     isUserIdProviuded = true;
                 }
 
-            if (userId <= 0){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "400");
-                root->set("detail", "query parametr <id> is invalid");
-                root->set("instance", "/post/user");
-                std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(root, ostr);
-                return;
-            }
-
             if (isUserIdProviuded){
                 std::vector<database::Post> posts = database::Post::GetUserPosts(userId);
 
@@ -169,7 +143,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "Posts not found");
+                    root->set("detail", "posts not found");
                     root->set("instance", "/post/user");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -194,7 +168,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Query parametr <id> is missing");
+                root->set("detail", "query parametr <id> is missing");
                 root->set("instance", "/post/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -220,7 +194,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
 
             std::string reason;
-            if (!CheckUpdateData(isIdProvided, id, json, reason)){
+            if (CheckUpdateData(isIdProvided, id, json, reason)){
                 std::string text_content = json->get("text_content");
                 database::Post::UpdatePost(id, text_content);
 
@@ -236,7 +210,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Update information is missing or incomplete: " + reason);
+                root->set("detail", "update information is missing or incomplete: " + reason);
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -261,19 +235,6 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 }
             }
 
-            if (id < 0){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "400");
-                root->set("detail", "query parametr <id> is invalid");
-                root->set("instance", "/post");
-                std::ostream &ostr = response.send();
-                Poco::JSON::Stringifier::stringify(root, ostr);
-                return;
-            }
-
             if (isIdProvided){
                 database::Post::DeletePost(id);
 
@@ -289,7 +250,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "Query parametr <id> is missing");
+                root->set("detail", "query parametr <id> is missing");
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -306,7 +267,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
-            root->set("detail", "Invalid path");
+            root->set("detail", "invalid path");
             root->set("instance", "uri.getPath()");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
@@ -332,7 +293,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
-        root->set("detail", "Unexpected error");
+        root->set("detail", "unexpected error");
         root->set("instance", "uri.getPath()"); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
@@ -345,19 +306,19 @@ bool PoistHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::strin
     bool isOK = true;
     
     if (!(json->has("id"))){
-        reason += R"(filed <id> is missing in JSON body data)";
+        reason += "filed <id> is missing in JSON body data";
         isOK = false;
     }
     if (!(json->has("author_id"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <author_id> is missing in JSON body data)";
+        reason += "filed <author_id> is missing in JSON body data";
         isOK = false;
     }
     if (!(json->has("text_content"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <text_content> is missing in JSON body data)";
+        reason += "filed <text_content> is missing in JSON body data";
         isOK = false;
     }
     
@@ -370,19 +331,13 @@ bool PoistHandler::CheckUpdateData(const bool &isIdProvided, const long &id, con
     bool isOK = true;
     
     if (!isIdProvided){
-        reason += R"(query parametr <id> is missing)";
-        isOK = false;
-    }
-    if (id < 0){
-        if (!reason.empty())
-            reason += ", ";
-        reason += R"(query parametr <id> is invalid)";
+        reason += "query parametr <id> is missing";
         isOK = false;
     }
     if (!(json->has("text_content"))){
         if (!reason.empty())
             reason += ", ";
-        reason += R"(filed <text_content> is missing in JSON body data)";
+        reason += "filed <text_content> is missing in JSON body data";
         isOK = false;
     }
     

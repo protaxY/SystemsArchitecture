@@ -10,7 +10,7 @@
 #include <iostream>
 
 int MessageServerApplication::main([[maybe_unused]] const std::vector<std::string> &args){       
-    Poco::Net::ServerSocket svs(Poco::Net::SocketAddress("0.0.0.0", 8082));
+    Poco::Net::ServerSocket svs(Poco::Net::SocketAddress("0.0.0.0", 8080));
     Poco::Net::HTTPServer srv(new MessageHandlerFactory, svs, new Poco::Net::HTTPServerParams);
     
     srv.start();

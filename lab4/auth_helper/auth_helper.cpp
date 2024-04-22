@@ -55,9 +55,6 @@ bool AuthHelper::ExtractPayload(const std::string &token, long &id, std::string 
             reason += "filed <id> in JWT-token payload is missing";
             isOK = false;
         }
-        if (jwtTToken.payload().has("id") && jwtTToken.payload().getValue<long>("id") <= 0){
-
-        }
         if (!jwtTToken.payload().has("login")){
             if (!reason.empty())
                 reason += ", ";

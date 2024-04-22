@@ -262,12 +262,12 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             }
             else
             {
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("status", "404");
-                root->set("detail", "User not found or login is not provided or password is incorrect");
+                root->set("status", "400");
+                root->set("detail", "login or password is incorrect");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -329,12 +329,12 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     }
                     else
                     {
-                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
                         response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
                         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                        root->set("status", "404");
-                        root->set("detail", "User not found or login is not provided or password is incorrect");
+                        root->set("status", "400");
+                        root->set("detail", "login or password is incorrect");
                         root->set("instance", "/user");
                         std::ostream &ostr = response.send();
                         Poco::JSON::Stringifier::stringify(root, ostr);
