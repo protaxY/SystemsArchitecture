@@ -31,7 +31,7 @@ std::string AuthHelper::GenerateToken(const long &id, const std::string &login)
     token.payload().set("id", id);
     token.setIssuedAt(Poco::Timestamp());
 
-    Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("", "private", "pass"));
+    Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public", "private", "pass"));
     // Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public", "private", "pass"));
 
     Poco::JWT::Signer signer(RSAKeyPtr);

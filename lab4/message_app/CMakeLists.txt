@@ -17,6 +17,7 @@ add_executable(${MESSAGE_APP} main.cpp
                ../config/config.cpp 
                ../mongo_database/mongo_database.cpp
                ../mongo_database/message.cpp
+               ../auth_helper/auth_helper.cpp
                message_server/message_request_handler/message_handler.cpp
                message_server/message_request_handler_factory/message_handler_factory.cpp
                message_server/message_server_application.cpp)

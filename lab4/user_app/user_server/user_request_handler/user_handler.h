@@ -12,6 +12,10 @@ class MessageHandler : public Poco::Net::HTTPRequestHandler{
     private:       
         Poco::JSON::Parser _jsonParser;
 
+        static bool CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason);
+        static bool CheckSearchByFirstLastName(const bool &isFirstNameProvided, const bool &isLastNameProvided, std::string &reason);
+        static bool CheckDeleteData(const bool &isLoginProvided, const bool &isPasswordProvided, std::string &reason);
+
     public:
         void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 };

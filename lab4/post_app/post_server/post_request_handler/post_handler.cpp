@@ -19,24 +19,71 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
 
         std::string scheme;
         std::string info;
-        request.getCredentials(scheme, info);
+        try{
+            request.getCredentials(scheme, info);
+        }
+        catch (...){
+            response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+            response.setChunkedTransferEncoding(true);
+            response.setContentType("application/json");
+            Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+            root->set("type", "/errors/not_authorized");
+            root->set("title", "Internal exception");
+            root->set("status", "403");
+            root->set("detail", "credentials are not provided");
+            root->set("instance", "/post");
+            std::ostream &ostr = response.send();
+            Poco::JSON::Stringifier::stringify(root, ostr);
+            return; 
+        }
 
         if (scheme == "Bearer"){
             std::string reason;
-            if (!AuthHelper::ExtractPayload(info, user_id, user_login, reason)){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+            try{
+                if (!AuthHelper::ExtractPayload(info, user_id, user_login, reason)){
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("type", "/errors/not_authorized");
+                    root->set("title", "Internal exception");
+                    root->set("status", "403");
+                    root->set("detail", "JWT-token processing failed: " + reason);
+                    root->set("instance", "/post");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;                  
+                }
+            }
+            catch(...){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("type", "/errors/not_authorized");
+                root->set("type", "/errors/unauthorized");
                 root->set("title", "Internal exception");
-                root->set("status", "403");
-                root->set("detail", "JWT-token processing failed: " + reason);
+                root->set("status", "401");
+                root->set("detail", "JWT-token processing failed, only use token given from /user/auth GET request");
                 root->set("instance", "/post");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
-                return;                  
+                return;
             }
+        }
+        else
+        {
+            response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
+            response.setChunkedTransferEncoding(true);
+            response.setContentType("application/json");
+            Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+            root->set("type", "/errors/unauthorized");
+            root->set("title", "Internal exception");
+            root->set("status", "401");
+            root->set("detail", "authorization scheme must be <Bearer>");
+            root->set("instance", "/post");
+            std::ostream &ostr = response.send();
+            Poco::JSON::Stringifier::stringify(root, ostr);
+            return;
         }
         
         Poco::URI uri(request.getURI());

@@ -45,7 +45,7 @@ namespace database
     bool User::IsNameValid(const std::string &name, std::string &reason){
         if (name.length() < 3)
         {
-            reason = "Name must be at leas 3 signs";
+            reason = "Name must be at least 3 signs";
             return false;
         }
 
