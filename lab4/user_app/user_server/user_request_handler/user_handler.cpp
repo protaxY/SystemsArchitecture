@@ -417,7 +417,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
-                    ostr << "{ \"id\" : \"" << *id << "\", \"Token\" : \""<< token <<"\"}" << std::endl;
+                    ostr << "{ \"id\" : \"" << *id << "\", \"token\" : \""<< token <<"\"}" << std::endl;
                     return;
                 }
                 else

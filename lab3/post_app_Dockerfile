@@ -2,7 +2,7 @@ FROM prota13/system-architecture-base
 
 RUN pip install faker pymongo
 
-ADD .. /opt/arch/lab3
+ADD . /opt/arch/lab3
 
 WORKDIR /opt/arch
 

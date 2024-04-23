@@ -1,0 +1,166 @@
+{
+	"info": {
+		"_postman_id": "eb761538-6914-4aa2-9639-06f770f7454e",
+		"name": "lab3_post_server",
+		"description": "Коллекция запросов к серверу записей.\n\nПри запуске docker-compose-файла из папки lab3 сервис будет работать на порту 8081.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31408065",
+		"_collection_link": "https://gold-moon-214104.postman.co/workspace/SystemsArchitecture-~da57d8da-561c-410d-a7b1-bd7d1241fcb9/collection/31408065-eb761538-6914-4aa2-9639-06f770f7454e?action=share&source=collection_link&creator=31408065"
+	},
+	"item": [
+		{
+			"name": "Получить информацию обо всех записях",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информаю о записи по идентификатору",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/post?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор записи"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить все записи пользователя",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/post/user?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"post",
+						"user"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить информацию о новой записи",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    // \"id\": 1, // Идентификатор записи\r\n    \"author_id\": 1, // Идентификатор пользователя-автора\r\n    \"text_content\": \"some_text\" // Текст записи\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновить информацию существующей записи",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text_content\": \"new_text\" // Новый текст записи\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/post?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор записи"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить информацию о сообщении Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/post?id=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

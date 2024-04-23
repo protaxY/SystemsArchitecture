@@ -1,0 +1,217 @@
+{
+	"info": {
+		"_postman_id": "0114d54c-c989-4375-9faa-e0431dd73145",
+		"name": "lab4_message_server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31408065",
+		"_collection_link": "https://gold-moon-214104.postman.co/workspace/SystemsArchitecture-~da57d8da-561c-410d-a7b1-bd7d1241fcb9/collection/31408065-0114d54c-c989-4375-9faa-e0431dd73145?action=share&source=collection_link&creator=31408065"
+	},
+	"item": [
+		{
+			"name": "Получить информацию обо всех сообщениях",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информаю о сообщении по идентификатору",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить все сообщения, где пользователь отправитель или получатель",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/message/user",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить сообщения переписки двух пользователей",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/message/chat?second_user_id=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message",
+						"chat"
+					],
+					"query": [
+						{
+							"key": "second_user_id",
+							"value": "2",
+							"description": "Идентификатор второго пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить информацию о новом сообшении",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1, // Идентификатор сообщения\r\n    \"receiver_id\": 2, // Идентификатор пользователя-получаетля\r\n    \"text_content\": \"some_text\" // Текст сообщения\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновить информацию существующего сообщения",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text_content\": \"new_text\" // Новый текст сообщения\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить информацию о сообщении",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "some_token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

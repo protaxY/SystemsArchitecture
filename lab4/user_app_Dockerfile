@@ -1,0 +1,9 @@
+FROM prota13/system-architecture-base
+
+RUN pip install faker psycopg2-binary
+
+ADD . /opt/arch/lab4
+
+WORKDIR /opt/arch
+
+RUN cmake -S ./lab4/user_app -B ./lab4/user_app/build && cd ./lab4/user_app/build && make

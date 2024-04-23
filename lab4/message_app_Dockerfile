@@ -1,0 +1,9 @@
+FROM prota13/system-architecture-base
+
+RUN pip install faker pymongo
+
+ADD . /opt/arch/lab4
+
+WORKDIR /opt/arch
+
+RUN cmake -S ./lab4/message_app -B ./lab4/message_app/build && cd ./lab4/message_app/build && make
