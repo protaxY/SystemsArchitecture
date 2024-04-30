@@ -8,10 +8,9 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/JSON/Parser.h>
 
-class PostHandler : public Poco::Net::HTTPRequestHandler{
+class APIGatewayHandler : public Poco::Net::HTTPRequestHandler{
     private:       
         Poco::JSON::Parser _jsonParser;
-
         static bool CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason);
         static bool CheckUpdateData(const bool &isIdProvided, const long &id, const Poco::JSON::Object::Ptr &json, std::string &reason);
 

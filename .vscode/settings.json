@@ -68,7 +68,14 @@
         "mutex": "cpp",
         "semaphore": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "csignal": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "forward_list": "cpp",
+        "source_location": "cpp",
+        "future": "cpp"
     },
     "cSpell.language": "en,ru"
 }

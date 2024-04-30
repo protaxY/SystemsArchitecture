@@ -41,8 +41,6 @@ namespace database{
 
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*insertRequest, response);
-            _connection.sendRequest(*insertRequest, response);
-            _connection.sendRequest(*insertRequest, response);
         }
         catch (std::exception &ex)
         {
@@ -63,8 +61,6 @@ namespace database{
             updateRequest->update() = updateDocument;
 
             _connection.sendRequest(*updateRequest);
-            _connection.sendRequest(*updateRequest);
-            _connection.sendRequest(*updateRequest);
         }
         catch (std::exception &ex)
         {
@@ -84,8 +80,6 @@ namespace database{
             queryDocument = document;
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*queryRequest, response);
-            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
-            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
 
             std::vector<std::string> result;
             for (auto doc : response.documents())
@@ -114,8 +108,6 @@ namespace database{
             
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*countRequest, response);
-            _connection.sendRequest(*countRequest, response);
-            _connection.sendRequest(*countRequest, response);
 
             if ( response.hasDocuments() )
                 return response.documents()[0]->getInteger("n");
@@ -138,8 +130,6 @@ namespace database{
             Poco::SharedPtr<Poco::MongoDB::DeleteRequest> deleteRequest = _database.createDeleteRequest(collection);
             Poco::MongoDB::Document &deleteDocument = deleteRequest->selector();
             deleteDocument = document;
-            _connection.sendRequest(*deleteRequest);
-            _connection.sendRequest(*deleteRequest);
             _connection.sendRequest(*deleteRequest);
         }
         catch (std::exception &ex)

@@ -1,5 +1,5 @@
-#include "post_handler.h"
-#include "../../../mongo_database/post.h"
+#include "message_handler.h"
+#include "../../../mongo_database/message.h"
 #include "../../../mongo_database/mongo_database.h"
 #include "../../../auth_helper/auth_helper.h"
 
@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
+void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {   
     try
     {      
@@ -30,7 +30,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             root->set("title", "Internal exception");
             root->set("status", "401");
             root->set("detail", "credentials are not provided");
-            root->set("instance", "/post");
+            root->set("instance", "/message");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
             return; 
@@ -47,7 +47,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                     root->set("title", "Internal exception");
                     root->set("status", "401");
                     root->set("detail", "JWT-token processing failed: " + reason);
-                    root->set("instance", "/post");
+                    root->set("instance", "/message");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
                     return;                  
@@ -77,7 +77,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             root->set("title", "Internal exception");
             root->set("status", "401");
             root->set("detail", "authorization scheme must be <Bearer>");
-            root->set("instance", "/post");
+            root->set("instance", "/message");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
             return;
@@ -85,23 +85,23 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         
         Poco::URI uri(request.getURI());
 
-        if (uri.getPath() == "/post"
+        if (uri.getPath() == "/message"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
-            Poco::Dynamic::Var jsonParseResult = PostHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var jsonParseResult = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = jsonParseResult.extract<Poco::JSON::Object::Ptr>();
 
-            json->set("author_id", user_id);
+            json->set("sender_id", user_id);
             std::string reason;
             if (CheckSaveData(json, reason)){
-                database::Post post = database::Post::fromJSON(json);
+                database::Message message = database::Message::fromJSON(json);
 
-                post.Save();
+                message.Save();
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 std::ostream &ostr = response.send();
-                ostr << post.get_id();
+                ostr << message.get_id();
             }
             else
             {
@@ -110,8 +110,8 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "post information is missing or incomplete: " + reason);
-                root->set("instance", "/post");
+                root->set("detail", "message information is missing or incomplete: " + reason);
+                root->set("instance", "/message");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
                 return;
@@ -120,16 +120,16 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             return;
         }
 
-        else if (uri.getPath() == "/post"
+        else if (uri.getPath() == "/message"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
-            bool isIdProvided = false;
+            bool isIdProviuded = false;
             long id;
             for (std::pair<std::string, std::string> pair : query)
                 if (pair.first == "id"){
                     id = std::stoi(pair.second);
-                    isIdProvided = true;
+                    isIdProviuded = true;
                 }
             
             if (id < 0){
@@ -139,21 +139,21 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
                 root->set("detail", "query parametr <id> is invalid");
-                root->set("instance", "/post");
+                root->set("instance", "/message");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
                 return;
             }
 
-            if (isIdProvided){
-                std::optional<database::Post> post = database::Post::GetPostById(id);
+            if (isIdProviuded){
+                std::optional<database::Message> message = database::Message::GetMessageById(id);
 
-                if (post){
+                if (message){
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
-                    Poco::JSON::Stringifier::stringify(post->toJSON(), ostr);
+                    Poco::JSON::Stringifier::stringify(message->toJSON(), ostr);
                 }
                 else
                 {
@@ -162,8 +162,8 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "posts not found");
-                    root->set("instance", "/post");
+                    root->set("detail", "messages not found");
+                    root->set("instance", "/message");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
                     return;
@@ -173,24 +173,24 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             }
             else
             {
-                std::vector<database::Post> posts = database::Post::GetAllPosts();
+                std::vector<database::Message> messages = database::Message::GetAllMessages();
                 
-                if (posts.size() == 0){
+                if (messages.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
-                    root->set("detail", "post not found");
-                    root->set("instance", "/post");
+                    root->set("detail", "messages not found");
+                    root->set("instance", "/message");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
                     return;
                 }
 
                 Poco::JSON::Array jsonMessageArray;
-                for (database::Post post : posts){
-                    jsonMessageArray.add(post.toJSON());
+                for (database::Message messages : messages){
+                    jsonMessageArray.add(messages.toJSON());
                 }
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
@@ -204,27 +204,27 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             return;
         }
 
-        else if (uri.getPath() == "/post/user"
+        else if (uri.getPath() == "/message/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
 
-            std::vector<database::Post> posts = database::Post::GetUserPosts(user_id);
+            std::vector<database::Message> messages = database::Message::GetUserMessages(user_id);
 
-            if (posts.size() == 0){
+            if (messages.size() == 0){
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "404");
-                root->set("detail", "posts not found");
-                root->set("instance", "/post/user");
+                root->set("detail", "messages not found");
+                root->set("instance", "/message/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
                 return;
             }
 
             Poco::JSON::Array jsonUserArray;
-            for (database::Post post : posts){
-                jsonUserArray.add(post.toJSON());
+            for (database::Message message : messages){
+                jsonUserArray.add(message.toJSON());
             }
 
             response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
@@ -235,12 +235,71 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             Poco::JSON::Stringifier::stringify(jsonUserArray, ostr);
         }
 
-        else if (uri.getPath() == "/post"
+        else if (uri.getPath() == "/message/chat"
+                 && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
+            Poco::URI::QueryParameters query = uri.getQueryParameters();
+
+            bool isSecondUserIdProvided = false;
+            long secondUserId = -1;
+            for (std::pair<std::string, std::string> pair : query){
+                if (pair.first == "second_user_id"){
+                    isSecondUserIdProvided = true;
+                    secondUserId = std::stoi(pair.second);
+                }
+            }
+
+            std::string reason;
+            if (CheckGetDialogData(user_id, isSecondUserIdProvided, secondUserId, reason)){
+                std::vector<database::Message> messages = database::Message::GetDialogMessages(user_id, secondUserId);
+
+                if (messages.size() == 0){
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("status", "404");
+                    root->set("detail", "messages not found");
+                    root->set("instance", "/message/chat");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;
+                }
+
+                Poco::JSON::Array jsonUserArray;
+                for (database::Message message : messages){
+                    jsonUserArray.add(message.toJSON());
+                }
+
+                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                std::ostream &ostr = response.send();
+
+                Poco::JSON::Stringifier::stringify(jsonUserArray, ostr);
+            }
+            else
+            {
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("status", "400");
+                root->set("detail", reason);
+                root->set("instance", "/message/chat");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;
+            }
+
+            return;
+        }
+
+        else if (uri.getPath() == "/message"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT){
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
             bool isIdProvided = false;
-            long id;
+            long id = -1;
             std::string password;
             for (std::pair<std::string, std::string> pair : query){
                 if (pair.first == "id"){
@@ -249,13 +308,13 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 }
             }
             
-            Poco::Dynamic::Var json1 = PostHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var json1 = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
 
             std::string reason;
             if (CheckUpdateData(isIdProvided, id, json, reason)){
                 std::string text_content = json->get("text_content");
-                database::Post::UpdatePost(id, text_content);
+                database::Message::UpdateMessage(id, text_content);
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                 response.setChunkedTransferEncoding(true);
@@ -269,8 +328,8 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "update data is missing or incomplete: " + reason);
-                root->set("instance", "/post");
+                root->set("detail", "message update data is missing: " + reason);
+                root->set("instance", "/message");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -280,12 +339,12 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             return;
         }
 
-        else if (uri.getPath() == "/post"
+        else if (uri.getPath() == "/message"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_DELETE){
             Poco::URI::QueryParameters query = uri.getQueryParameters();
 
             bool isIdProvided = false;
-            long id;
+            long id = -1;
             std::string password;
             for (std::pair<std::string, std::string> pair : query){
                 if (pair.first == "id"){
@@ -301,14 +360,14 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
                 root->set("detail", "query parametr <id> is invalid");
-                root->set("instance", "/post");
+                root->set("instance", "/message");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
                 return;
             }
 
             if (isIdProvided){
-                database::Post::DeletePost(id);
+                database::Message::DeleteMessage(id);
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                 response.setChunkedTransferEncoding(true);
@@ -322,8 +381,8 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", "query parametr <id> is missing");
-                root->set("instance", "/post");
+                root->set("detail", "message id is missing");
+                root->set("instance", "/message");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -372,19 +431,25 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
     }
 }
 
-bool PostHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason)
+bool MessageHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason)
 {
     reason = "";
     bool isOK = true;
     
-    if (!(json->has("id")) || json->getValue<long>("id") <= 0){
-        reason += "filed <id> in JWT-token payload data is invalid";
+    if (!(json->has("id"))){
+        reason += "filed <id> is missing in JSON body data";
         isOK = false;
     }
-    if (!(json->has("author_id"))){
+    if (!(json->has("sender_id"))){
         if (!reason.empty())
             reason += ", ";
-        reason += "filed <id> in JWT-token payload is invalid";
+        reason += "filed <sender_id> is missing in JWT-token payload data";
+        isOK = false;
+    }
+    if (!(json->has("receiver_id"))){
+        if (!reason.empty())
+            reason += ", ";
+        reason += "filed <receiver_id> is missing in JSON body data";
         isOK = false;
     }
     if (!(json->has("text_content"))){
@@ -397,7 +462,27 @@ bool PostHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string
     return isOK;
 }
 
-bool PostHandler::CheckUpdateData(const bool &isIdProvided, const long &id, const Poco::JSON::Object::Ptr &json, std::string &reason)
+bool MessageHandler::CheckGetDialogData(const long &user_id, const bool &isSecondUserIdProvided, const long &secondUserId, std::string &reason){
+    reason = "";
+    bool isOK = true;
+    
+    if (!isSecondUserIdProvided){
+        if (!reason.empty())
+            reason += ", ";
+        reason += "query parametr <second_user_id> is missing";
+        isOK = false;
+    }
+    if (secondUserId <= 0){
+        if (!reason.empty())
+            reason += ", ";
+        reason += "query parametr <second_user_id> is invalid";
+        isOK = false;
+    }
+    
+    return isOK;
+}
+
+bool MessageHandler::CheckUpdateData(const bool &isIdProvided, const long &id, const Poco::JSON::Object::Ptr &json, std::string &reason)
 {
     reason = "";
     bool isOK = true;

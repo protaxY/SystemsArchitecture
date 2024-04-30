@@ -11,7 +11,7 @@
 
 
 
-void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
+void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {   
     try
     {      
@@ -19,7 +19,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
 
         if (uri.getPath() == "/post"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
-            Poco::Dynamic::Var jsonParseResult = PoistHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var jsonParseResult = PostHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = jsonParseResult.extract<Poco::JSON::Object::Ptr>();
 
             std::string reason;
@@ -190,7 +190,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
                 }
             }
             
-            Poco::Dynamic::Var json1 = PoistHandler::_jsonParser.parse(request.stream());
+            Poco::Dynamic::Var json1 = PostHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
 
             std::string reason;
@@ -300,7 +300,7 @@ void PoistHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Ne
     }
 }
 
-bool PoistHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason)
+bool PostHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::string &reason)
 {
     reason = "";
     bool isOK = true;
@@ -325,7 +325,7 @@ bool PoistHandler::CheckSaveData(const Poco::JSON::Object::Ptr &json, std::strin
     return isOK;
 }
 
-bool PoistHandler::CheckUpdateData(const bool &isIdProvided, const long &id, const Poco::JSON::Object::Ptr &json, std::string &reason)
+bool PostHandler::CheckUpdateData(const bool &isIdProvided, const long &id, const Poco::JSON::Object::Ptr &json, std::string &reason)
 {
     reason = "";
     bool isOK = true;
