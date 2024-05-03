@@ -84,7 +84,7 @@ namespace database
         Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
         
         std::vector<Message> messages;
-        for (Poco::MongoDB::Document::Ptr document : responseDocuments){
+        for (Poco::MongoDB::Document::Ptr document : responseDocuments){          
             Message message;
 
             message.id() = document->get<long>("id");
@@ -116,7 +116,7 @@ namespace database
         matchFieldsArrPtr->add(senderIdDocPtr);
         matchFieldsArrPtr->add(receiverIdDocPtr);
 
-        document.add("$and", matchFieldsArrPtr);
+        document.add("$or", matchFieldsArrPtr);
 
         Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
 

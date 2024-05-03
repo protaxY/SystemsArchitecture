@@ -5,7 +5,14 @@
 #include <Poco/Base64Decoder.h>
 #include <Poco/JWT/Token.h>
 #include <Poco/JWT/Signer.h>
-#include <Poco/Crypto/RSAKey.h>
+
+std::string AuthHelper::getJWTKey() {
+    if (std::getenv("JWT_KEY") != nullptr) {
+        std::cout << "key loaded" << std::endl;
+        return std::getenv("JWT_KEY");
+    }
+    return "0123456789ABCDEF0123456789ABCDEF";
+}
 
 void AuthHelper::DecodeIdentity(const std::string &identity, std::string &login, std::string &password)
 {
@@ -31,12 +38,9 @@ std::string AuthHelper::GenerateToken(const long &id, const std::string &login)
     token.payload().set("id", id);
     token.setIssuedAt(Poco::Timestamp());
 
-    Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public", "private", "pass"));
-    // Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public", "private", "pass"));
+    Poco::JWT::Signer signer(getJWTKey());
+    return signer.sign(token, Poco::JWT::Signer::ALGO_HS256);
 
-    Poco::JWT::Signer signer(RSAKeyPtr);
-    signer.addAlgorithm(Poco::JWT::Signer::ALGO_RS256);
-    return signer.sign(token, Poco::JWT::Signer::ALGO_RS256);
 }
 
 bool AuthHelper::ExtractPayload(const std::string &token, long &id, std::string &login, std::string &reason)
@@ -44,10 +48,7 @@ bool AuthHelper::ExtractPayload(const std::string &token, long &id, std::string 
     bool isOK = true;
     reason = "";
 
-    Poco::SharedPtr<Poco::Crypto::RSAKey> RSAKeyPtr(new Poco::Crypto::RSAKey("public"));
-    Poco::JWT::Signer signer(RSAKeyPtr);
-    signer.addAlgorithm(Poco::JWT::Signer::ALGO_RS256);
-
+    Poco::JWT::Signer signer(getJWTKey());
     try {
         Poco::JWT::Token jwtTToken = signer.verify(token);
 

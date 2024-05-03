@@ -20,6 +20,10 @@ class  Config{
         std::string _cache_host;
         std::string _cache_port;
 
+        std::string _user_port;
+        std::string _message_port;
+        std::string _post_port;
+
     public:
         static Config& get();
 
@@ -45,6 +49,10 @@ class  Config{
 
         const std::string& get_cache_host() const;
         const std::string& get_cache_port() const;
+
+        const std::string& get_user_port() const;
+        const std::string& get_message_port() const;
+        const std::string& get_post_port() const;
 };
 
 #endif

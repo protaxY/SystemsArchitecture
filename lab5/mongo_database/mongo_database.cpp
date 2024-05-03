@@ -8,9 +8,8 @@ namespace database{
     MongoDatabase::MongoDatabase() : _database(Config::get().get_mongo_database())
     {
         std::cout << "# Connecting to mongodb: " << Config::get().get_mongo() << ":" << Config::get().get_mongo_port()  << std::endl;
+        
         _connection.connect(Config::get().get_mongo(), atoi(Config::get().get_mongo_port().c_str()));
-        MongoDatabase::CreateCollection(_messagesCollectionName);
-        MongoDatabase::CreateCollection(_postsCollectionName);
     }
 
     void MongoDatabase::CreateCollection(const std::string &name)
@@ -76,14 +75,12 @@ namespace database{
         try
         {
             Poco::SharedPtr<Poco::MongoDB::QueryRequest> queryRequest = _database.createQueryRequest(collection);
+
             Poco::MongoDB::Document &queryDocument = queryRequest->selector();
             queryDocument = document;
             Poco::MongoDB::ResponseMessage response;
-            _connection.sendRequest(*queryRequest, response);
 
-            std::vector<std::string> result;
-            for (auto doc : response.documents())
-                result.push_back(doc->toString());
+            _connection.sendRequest(*queryRequest, response);
 
             return response.documents();
         }

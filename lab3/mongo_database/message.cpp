@@ -84,7 +84,7 @@ namespace database
         Poco::MongoDB::Document::Vector responseDocuments = MongoDatabase::get().getDocuments(collectionName, document);
         
         std::vector<Message> messages;
-        for (Poco::MongoDB::Document::Ptr document : responseDocuments){
+        for (Poco::MongoDB::Document::Ptr document : responseDocuments){          
             Message message;
 
             message.id() = document->get<long>("id");

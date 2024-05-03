@@ -1,15 +1,12 @@
-#ifndef HTTPPOSTREQUESTFACTORY_H
-#define HTTPPOSTREQUESTFACTORY_H
+#ifndef API_GATEWAY_HANDLER_FACTORY_H
+#define API_GATEWAY_HANDLER_FACTORY_H
 
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 
 class APIGatewayHandlerFactory: public Poco::Net::HTTPRequestHandlerFactory
 {
-private:
-    std::string _format;
-    
-public:
-    Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest & request);
+    public:
+        Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest & request);
 };
 
-#endif // HTTPPOSTREQUESTFACTORY_H
+#endif // API_GATEWAY_HANDLER_FACTORY_H

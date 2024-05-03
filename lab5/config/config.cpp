@@ -14,6 +14,10 @@ Config::Config()
 
         _cache_host = std::getenv("CACHE_HOST");
         _cache_port = std::getenv("CACHE_PORT");
+
+        _user_port = std::getenv("USER_PORT");
+        _message_port = std::getenv("MESSAGE_PORT");
+        _post_port = std::getenv("POST_PORT");
 }
 
 std::string& Config::mongo(){
@@ -93,6 +97,21 @@ const std::string &Config::get_cache_host() const
 const std::string &Config::get_cache_port() const
 {
     return _cache_port;
+}
+
+const std::string &Config::get_user_port() const
+{
+    return _user_port;
+}
+
+const std::string &Config::get_message_port() const
+{
+    return _message_port;
+}
+
+const std::string &Config::get_post_port() const
+{
+    return _post_port;
 }
 
 Config &Config::get()

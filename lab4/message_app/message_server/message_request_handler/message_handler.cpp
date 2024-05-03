@@ -82,7 +82,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             Poco::JSON::Stringifier::stringify(root, ostr);
             return;
         }
-        
+    
         Poco::URI uri(request.getURI());
 
         if (uri.getPath() == "/message"

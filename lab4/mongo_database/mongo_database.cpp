@@ -8,9 +8,8 @@ namespace database{
     MongoDatabase::MongoDatabase() : _database(Config::get().get_mongo_database())
     {
         std::cout << "# Connecting to mongodb: " << Config::get().get_mongo() << ":" << Config::get().get_mongo_port()  << std::endl;
+        
         _connection.connect(Config::get().get_mongo(), atoi(Config::get().get_mongo_port().c_str()));
-        MongoDatabase::CreateCollection(_messagesCollectionName);
-        MongoDatabase::CreateCollection(_postsCollectionName);
     }
 
     void MongoDatabase::CreateCollection(const std::string &name)
@@ -41,8 +40,6 @@ namespace database{
 
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*insertRequest, response);
-            _connection.sendRequest(*insertRequest, response);
-            _connection.sendRequest(*insertRequest, response);
         }
         catch (std::exception &ex)
         {
@@ -63,8 +60,6 @@ namespace database{
             updateRequest->update() = updateDocument;
 
             _connection.sendRequest(*updateRequest);
-            _connection.sendRequest(*updateRequest);
-            _connection.sendRequest(*updateRequest);
         }
         catch (std::exception &ex)
         {
@@ -80,16 +75,12 @@ namespace database{
         try
         {
             Poco::SharedPtr<Poco::MongoDB::QueryRequest> queryRequest = _database.createQueryRequest(collection);
+
             Poco::MongoDB::Document &queryDocument = queryRequest->selector();
             queryDocument = document;
             Poco::MongoDB::ResponseMessage response;
-            _connection.sendRequest(*queryRequest, response);
-            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
-            _connection.sendRequest(*queryRequest, response); // ??? странное поведение
 
-            std::vector<std::string> result;
-            for (auto doc : response.documents())
-                result.push_back(doc->toString());
+            _connection.sendRequest(*queryRequest, response);
 
             return response.documents();
         }
@@ -114,8 +105,6 @@ namespace database{
             
             Poco::MongoDB::ResponseMessage response;
             _connection.sendRequest(*countRequest, response);
-            _connection.sendRequest(*countRequest, response);
-            _connection.sendRequest(*countRequest, response);
 
             if ( response.hasDocuments() )
                 return response.documents()[0]->getInteger("n");
@@ -138,8 +127,6 @@ namespace database{
             Poco::SharedPtr<Poco::MongoDB::DeleteRequest> deleteRequest = _database.createDeleteRequest(collection);
             Poco::MongoDB::Document &deleteDocument = deleteRequest->selector();
             deleteDocument = document;
-            _connection.sendRequest(*deleteRequest);
-            _connection.sendRequest(*deleteRequest);
             _connection.sendRequest(*deleteRequest);
         }
         catch (std::exception &ex)

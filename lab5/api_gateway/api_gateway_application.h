@@ -1,5 +1,5 @@
-#ifndef POSTSERVERAPP_H
-#define POSTSERVERAPP_H
+#ifndef API_GATEWAY_APP_H
+#define API_GATEWAY_APP_H
 
 #include <string>
 #include <Poco/Util/ServerApplication.h>
@@ -9,4 +9,4 @@ class APIGatewayApplication : public Poco::Util::ServerApplication{
         int main(const std::vector<std::string> &args) override;
 };
 
-#endif // POSTSERVERAPP_H
+#endif // API_GATEWAY_APP_H

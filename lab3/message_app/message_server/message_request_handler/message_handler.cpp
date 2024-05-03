@@ -96,8 +96,8 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                    root->set("status", "400");
-                    root->set("detail", "query parametr <id> is not provided");
+                    root->set("status", "404");
+                    root->set("detail", "messages not found");
                     root->set("instance", "/message");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
