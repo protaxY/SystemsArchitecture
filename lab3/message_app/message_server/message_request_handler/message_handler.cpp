@@ -11,10 +11,10 @@
 
 void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {   
+    Poco::URI uri(request.getURI());
+    
     try
     {      
-        Poco::URI uri(request.getURI());
-
         if (uri.getPath() == "/message"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
             Poco::Dynamic::Var jsonParseResult = MessageHandler::_jsonParser.parse(request.stream());
@@ -329,7 +329,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
             root->set("detail", "invalid path");
-            root->set("instance", "uri.getPath()");
+            root->set("instance", uri.getPath());
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -343,7 +343,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
         root->set("detail", "invalid JSON format");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
@@ -355,7 +355,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
         root->set("detail", "unexpected error");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
     }

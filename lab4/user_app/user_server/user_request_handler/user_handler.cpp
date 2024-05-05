@@ -11,10 +11,10 @@
 
 void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {
-    try
-    {      
-        Poco::URI uri(request.getURI());
+    Poco::URI uri(request.getURI());
 
+    try
+    {          
         // создать нового пользователя
         if (uri.getPath() == "/user"
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST){
@@ -375,7 +375,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 request.getCredentials(scheme, info);
             }
             catch (...){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
@@ -403,7 +403,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     root->set("type", "/errors/unauthorized");
                     root->set("title", "Internal exception");
                     root->set("status", "401");
-                    root->set("detail", "failed to parse login in password, credentials must be in <login:password> format");
+                    root->set("detail", "failed to parse login and password, credentials must be in <login:password> format");
                     root->set("instance", "/user/auth");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -459,7 +459,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
             root->set("detail", "invalid path");
-            root->set("instance", "uri.getPath()");
+            root->set("instance", uri.getPath());
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -475,7 +475,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
         root->set("detail", "invalid JSON format");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
@@ -487,7 +487,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
         root->set("detail", "unexpected error");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
     }

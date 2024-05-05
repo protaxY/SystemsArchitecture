@@ -1,0 +1,19 @@
+FROM prota13/system-architecture-base
+
+RUN git clone https://github.com/tdv/redis-cpp.git
+RUN cd redis-cpp &&\
+    mkdir build &&\ 
+    cd build &&\ 
+    cmake .. &&\ 
+    make &&\ 
+    sudo make install &&\
+    cd &&\
+    rm redis-cpp -rf 
+
+RUN ldconfig
+
+RUN pip install faker psycopg2-binary pymongo
+
+# ADD . /opt/arch/lab5
+
+WORKDIR /opt/arch

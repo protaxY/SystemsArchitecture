@@ -12,8 +12,7 @@ namespace database
     
     Cache::Cache()
     {
-        // _stream = rediscpp::make_stream(Config::get().get_cache_host(), Config::get().get_cache_port());
-        _stream = rediscpp::make_stream("123", "123");
+        _stream = rediscpp::make_stream(Config::get().get_cache_host(), Config::get().get_cache_port());
     }
 
     Cache Cache::get()

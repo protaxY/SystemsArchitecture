@@ -11,9 +11,59 @@
 
 void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {
+    Poco::URI uri(request.getURI());
+
     try
     {      
-        Poco::URI uri(request.getURI());
+        bool hasCredentials = false;
+        bool isAuthorized = false;
+        std::string login, password;
+
+        std::string scheme;
+        std::string info;
+        try{
+            request.getCredentials(scheme, info);
+            hasCredentials = true;
+        }
+        catch (...){}
+
+        if (hasCredentials){
+            if (scheme == "Basic")
+            {
+                try{
+                    AuthHelper::DecodeIdentity(info, login, password);
+                    isAuthorized = true;
+                }
+                catch (...){
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
+                    response.setChunkedTransferEncoding(true);
+                    response.setContentType("application/json");
+                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                    root->set("type", "/errors/unauthorized");
+                    root->set("title", "Internal exception");
+                    root->set("status", "401");
+                    root->set("detail", "failed to parse login and password, credentials must be in <login:password> format");
+                    root->set("instance", "/user");
+                    std::ostream &ostr = response.send();
+                    Poco::JSON::Stringifier::stringify(root, ostr);
+                    return;
+                }
+            }
+            else{
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("type", "/errors/unauthorized");
+                root->set("title", "Internal exception");
+                root->set("status", "401");
+                root->set("detail", "authorization scheme must be <Basic>");
+                root->set("instance", "/user");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;
+            }
+        }
 
         // создать нового пользователя
         if (uri.getPath() == "/user"
@@ -204,56 +254,38 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         // удалить пользователя по ID
         else if (uri.getPath() == "/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_DELETE){
-            std::string path = uri.getPath();
-
-            Poco::URI::QueryParameters query = uri.getQueryParameters();
             
-            bool isLoginProvided = false, isPasswordProvided = false;
-            std::string login, password;
-            for (std::pair<std::string, std::string> pair : query){
-                if (pair.first == "login"){
-                    login = pair.second;
-                    isLoginProvided = true;
-                }
-                else if (pair.first == "password"){
-                    password = pair.second;
-                    isPasswordProvided = true;
-                }
+            if (!isAuthorized){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("type", "/errors/unauthorized");
+                root->set("title", "Internal exception");
+                root->set("status", "401");
+                root->set("detail", "login and password must be provided in credentials with <Basic> scheme");
+                root->set("instance", "/user");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;
             }
 
-            std::string reason;
-            if (CheckDeleteData(isLoginProvided, isPasswordProvided, reason)){
-                std::optional<long> deletedId = database::User::Delete(login, password);
-
-                if (deletedId){
-                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
-                    response.setContentType("application/json");
-                    std::ostream &ostr = response.send();
-                    ostr << *deletedId;
-                }
-                else
-                {
-                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                    response.setChunkedTransferEncoding(true);
-                    response.setContentType("application/json");
-                    Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                    root->set("status", "400");
-                    root->set("detail", "login or password is incorrect");
-                    root->set("instance", "/user");
-                    std::ostream &ostr = response.send();
-                    Poco::JSON::Stringifier::stringify(root, ostr);
-                    return;
-                }
+            std::optional<long> deletedId = database::User::Delete(login, password);
+            if (deletedId){
+                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                std::ostream &ostr = response.send();
+                ostr << *deletedId;
             }
             else
             {
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
-                root->set("detail", reason);
+                root->set("detail", "login or password is incorrect");
                 root->set("instance", "/user");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -264,27 +296,27 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         // обновить информацию о пользователе
         else if (uri.getPath() == "/user"
                  && request.getMethod() == Poco::Net::HTTPRequest::HTTP_PUT){
-            std::string path = uri.getPath();
-            Poco::URI::QueryParameters query = uri.getQueryParameters();
-
-            bool isLoginProvided = false, isPasswordProvided = false;
-            std::string login, password;
-            for (std::pair<std::string, std::string> pair : query){
-                if (pair.first == "login"){
-                    login = pair.second;
-                    isLoginProvided = true;
-                }
-                else if (pair.first == "password"){
-                    password = pair.second;
-                    isPasswordProvided = true;
-                }
+            
+            if (!isAuthorized){
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
+                response.setChunkedTransferEncoding(true);
+                response.setContentType("application/json");
+                Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+                root->set("type", "/errors/unauthorized");
+                root->set("title", "Internal exception");
+                root->set("status", "401");
+                root->set("detail", "login and password must be provided in credentials with <Basic> scheme");
+                root->set("instance", "/user");
+                std::ostream &ostr = response.send();
+                Poco::JSON::Stringifier::stringify(root, ostr);
+                return;
             }
             
             Poco::Dynamic::Var json1 = MessageHandler::_jsonParser.parse(request.stream());
             Poco::JSON::Object::Ptr json = json1.extract<Poco::JSON::Object::Ptr>();
             
             std::string reason;
-            if (CheckUpdateData(isLoginProvided, isPasswordProvided, json, reason)){
+            if (CheckUpdateData(json, reason)){
                 bool isValidUpdateUser = true;
                 std::string validateResult;
                 std::string reason;
@@ -375,7 +407,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 request.getCredentials(scheme, info);
             }
             catch (...){
-                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
                 response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
@@ -403,7 +435,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     root->set("type", "/errors/unauthorized");
                     root->set("title", "Internal exception");
                     root->set("status", "401");
-                    root->set("detail", "failed to parse login in password, credentials must be in <login:password> format");
+                    root->set("detail", "failed to parse login and password, credentials must be in <login:password> format");
                     root->set("instance", "/user/auth");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(root, ostr);
@@ -415,7 +447,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
                     response.setChunkedTransferEncoding(true);
-                    response.setContentType("token");
+                    response.setContentType("application/token");
                     std::ostream &ostr = response.send();
                     ostr << token;
                     ostr.flush();
@@ -460,7 +492,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
             root->set("detail", "invalid path");
-            root->set("instance", "uri.getPath()");
+            root->set("instance", uri.getPath());
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -476,7 +508,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
         root->set("detail", "invalid JSON format");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
@@ -488,7 +520,7 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
         root->set("detail", "unexpected error");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
     }
@@ -577,45 +609,15 @@ bool MessageHandler::CheckSearchByFirstLastName(const bool &isFirstNameProvided,
     return isOK;
 }
 
-bool MessageHandler::CheckUpdateData(const bool &isLoginProvided, const bool &isPasswordProvided, const Poco::JSON::Object::Ptr &json, std::string &reason)
+bool MessageHandler::CheckUpdateData(const Poco::JSON::Object::Ptr &json, std::string &reason)
 {
     reason = "";
     bool isOK = true;
     
-    if (!isLoginProvided){
-        reason += "query parametr <login> is not provided";
-        isOK = false;
-    }
-    if (!isPasswordProvided){
-        if (!reason.empty())
-            reason += ", ";
-        reason += "query parametr <password> is not provided";
-        isOK = false;
-    }
     if (!(json->has("first_name") || json->has("last_name") || json->has("email") || json->has("title") || json->has("password"))){
-        if (!reason.empty())
-            reason += ", ";
         reason += "JSON body data must contain at least one of these fields: <first_name>, <last_name>, <email>, <title>, <password>";
         isOK = false;
     }
 
-    return isOK;
-}
-
-bool MessageHandler::CheckDeleteData(const bool &isLoginProvided, const bool &isPasswordProvided, std::string &reason){
-    reason = "";
-    bool isOK = true;
-    
-    if (!isLoginProvided){
-        reason += "query parametr <login> is not provided";
-        isOK = false;
-    }
-    if (!isPasswordProvided){
-        if (!reason.empty())
-            reason += ", ";
-        reason += "query parametr <password> is not provided";
-        isOK = false;
-    }
-    
     return isOK;
 }

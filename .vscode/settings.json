@@ -75,7 +75,8 @@
         "coroutine": "cpp",
         "forward_list": "cpp",
         "source_location": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "*.ipp": "cpp"
     },
     "cSpell.language": "en,ru"
 }

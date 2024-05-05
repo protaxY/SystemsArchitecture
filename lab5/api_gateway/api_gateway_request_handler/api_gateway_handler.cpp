@@ -6,35 +6,28 @@
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/StreamCopier.h>
 #include <Poco/Net/HTTPClientSession.h>
+#include <Poco/Net/SocketAddress.h>
 
 #include <iostream>
 
-#include "../config/config.h"
-#include "../cache/cache.h"
+#include "../../config/config.h"
+#include "../../cache/cache.h"
 
 void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {   
+    Poco::URI uri(request.getURI());
+    
     try
     {      
+        bool hasCredentials = false;
+        
         std::string scheme;
         std::string info;
         try{
             request.getCredentials(scheme, info);
+            hasCredentials = true;
         }
-        catch (...){
-            response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
-            response.setChunkedTransferEncoding(true);
-            response.setContentType("application/json");
-            Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-            root->set("type", "/errors/unauthorized");
-            root->set("title", "Internal exception");
-            root->set("status", "401");
-            root->set("detail", "credentials are not provided");
-            root->set("instance", "/message");
-            std::ostream &ostr = response.send();
-            Poco::JSON::Stringifier::stringify(root, ostr);
-            return; 
-        }
+        catch (...){}
 
         if (scheme != "Basic")
         {
@@ -46,7 +39,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
             root->set("title", "Internal exception");
             root->set("status", "401");
             root->set("detail", "authorization scheme must be <Basic>");
-            root->set("instance", "/message");
+            root->set("instance", "/api_gateway");
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
             return;
@@ -69,7 +62,14 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         }
         
         std::string authResult;
-        if (!APIGatewayHandler::AuthRequest(info, authResult)){
+        std::string authScheme;
+        if (Poco::URI(request.getURI()).getPath().length() >= 5
+            && Poco::URI(request.getURI()).getPath().substr(0, 5) == "/user"
+            && hasCredentials){
+            authResult = info;
+            authScheme = "Basic";
+        }
+        else if (hasCredentials && !APIGatewayHandler::AuthRequest(info, authResult)){
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
             response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
@@ -77,12 +77,15 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
             ostr << authResult;
             return;
         }
+        else
+            authScheme = "Bearer";
+
         std::string &token = authResult;
         std::stringstream bodyStream;
         Poco::StreamCopier::copyStream(request.stream(), bodyStream);
 
         std::string result;
-        Poco::Net::HTTPResponse::HTTPStatus redirectedStatus = RedirectRequest(request.getMethod(), Poco::URI(request.getURI()), bodyStream.str(), token, result);
+        Poco::Net::HTTPResponse::HTTPStatus redirectedStatus = RedirectRequest(request.getMethod(), Poco::URI(request.getURI()), bodyStream.str(), authScheme, token, result);
         if (redirectedStatus == Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK
             && request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET){
             PutToCache(request.getMethod(), request.getURI(), info, result);
@@ -102,7 +105,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
         root->set("detail", "invalid JSON format");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
@@ -114,7 +117,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
         root->set("detail", "unexpected error");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
     }
@@ -142,12 +145,10 @@ std::optional<std::string> APIGatewayHandler::GetFromCache(const std::string &me
 
 bool APIGatewayHandler::AuthRequest(const std::string &basicAuth, std::string &result){
     try{
-        std::string authBase = "http://localhost:";
-        authBase += Config::get().get_user_port();
+        std::string authUri = "/user/auth";
+        Poco::Net::HTTPClientSession session("user_service", std::stoi(Config::get().get_user_port()));
 
-        Poco::Net::HTTPClientSession session("localhost", std::stoi(Config::get().get_user_port()));
-
-        Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, authBase + "/user/auth", Poco::Net::HTTPMessage::HTTP_1_1);
+        Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, authUri, Poco::Net::HTTPMessage::HTTP_1_1);
         request.set("Authorization", "Basic " + basicAuth);
         request.setContentType("application/json");
 
@@ -160,7 +161,7 @@ bool APIGatewayHandler::AuthRequest(const std::string &basicAuth, std::string &r
 
         result = ss.str();
 
-        if (response.getStatus() == Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN)
+        if (response.getStatus() != Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK)
             return false;
         else
             return true;
@@ -173,34 +174,38 @@ bool APIGatewayHandler::AuthRequest(const std::string &basicAuth, std::string &r
     return false;
 }
 
-Poco::Net::HTTPResponse::HTTPStatus APIGatewayHandler::RedirectRequest(const std::string &method, const Poco::URI &uri, const std::string &body, const std::string &token, std::string &result){
+Poco::Net::HTTPResponse::HTTPStatus APIGatewayHandler::RedirectRequest(const std::string &method, const Poco::URI &uri, const std::string &body, const std::string &authScheme, const std::string &token, std::string &result){
     try{
-        std::string redirectBase = "http://localhost:";
+        std::string redirectUri;
         std::string path = uri.getPath();
         
-        Poco::Net::HTTPClientSession session(uri.getHost(), uri.getPort());
+        std::string redirectHost;
+        std::string redirectPort;
         if (path.length() >= 5
             && path.substr(0, 5) == "/user"){
-            redirectBase += Config::get().get_user_port();
-            session.setHost("user");
+            redirectHost = Config::get().get_user_host();
+            redirectPort = Config::get().get_user_port();
         }
         else if (path.length() >= 8
                  && path.substr(0, 8) == "/message"){
-            redirectBase += Config::get().get_message_port();
-            session.setHost("message");
+            redirectHost = Config::get().get_message_host();
+            redirectPort = Config::get().get_message_port();
         }
         else if (path.length() >= 5
                  && path.substr(0, 5) == "/post"){
-            redirectBase += Config::get().get_post_port();
-            session.setHost("post");
+            redirectHost = Config::get().get_post_host();
+            redirectPort = Config::get().get_post_port();
         }
+        Poco::Net::HTTPClientSession session(redirectHost, std::stoi(redirectPort));
 
-        Poco::Net::HTTPRequest request(method, redirectBase + uri.getPathAndQuery(), Poco::Net::HTTPMessage::HTTP_1_1);
-        request.set("Authorization", "Bearer " + token);
+        redirectUri += uri.getPathAndQuery();
+
+        Poco::Net::HTTPRequest request(method, redirectUri, Poco::Net::HTTPMessage::HTTP_1_1);
+        if (!token.empty())
+            request.set("Authorization", authScheme + " " + token);
         request.setContentType("application/json");
         request.setContentLength(body.length());
         session.sendRequest(request) << body;
-
         session.sendRequest(request);
 
         Poco::Net::HTTPResponse response;
@@ -216,7 +221,7 @@ Poco::Net::HTTPResponse::HTTPStatus APIGatewayHandler::RedirectRequest(const std
     }
     catch (Poco::Exception &ex)
     {
-        std::cerr << ex.displayText() << std::endl;
+        std::cout << ex.displayText() << std::endl;
         return Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
     }
     return Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;

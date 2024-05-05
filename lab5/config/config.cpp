@@ -15,8 +15,13 @@ Config::Config()
         _cache_host = std::getenv("CACHE_HOST");
         _cache_port = std::getenv("CACHE_PORT");
 
+        _user_host = std::getenv("USER_HOST");
         _user_port = std::getenv("USER_PORT");
+
+        _message_host = std::getenv("MESSAGE_HOST");
         _message_port = std::getenv("MESSAGE_PORT");
+
+        _post_host = std::getenv("POST_HOST");
         _post_port = std::getenv("POST_PORT");
 }
 
@@ -64,6 +69,46 @@ const std::string &Config::get_database() const
     return _database;
 }
 
+const std::string &Config::get_cache_host() const
+{
+    return _cache_host;
+}
+
+const std::string &Config::get_cache_port() const
+{
+    return _cache_port;
+}
+
+const std::string &Config::get_user_host() const
+{
+    return _user_host;
+}
+
+const std::string &Config::get_user_port() const
+{
+    return _user_port;
+}
+
+const std::string &Config::get_message_host() const
+{
+    return _message_host;
+}
+
+const std::string &Config::get_message_port() const
+{
+    return _message_port;
+}
+
+const std::string &Config::get_post_host() const
+{
+    return _post_host;
+}
+
+const std::string &Config::get_post_port() const
+{
+    return _post_port;
+}
+
 std::string &Config::port()
 {
     return _port;
@@ -87,31 +132,6 @@ std::string &Config::password()
 std::string &Config::database()
 {
     return _database;
-}
-
-const std::string &Config::get_cache_host() const
-{
-    return _cache_host;
-}
-
-const std::string &Config::get_cache_port() const
-{
-    return _cache_port;
-}
-
-const std::string &Config::get_user_port() const
-{
-    return _user_port;
-}
-
-const std::string &Config::get_message_port() const
-{
-    return _message_port;
-}
-
-const std::string &Config::get_post_port() const
-{
-    return _post_port;
 }
 
 Config &Config::get()

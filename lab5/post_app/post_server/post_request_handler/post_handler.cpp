@@ -12,6 +12,8 @@
 
 void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response)
 {   
+    Poco::URI uri(request.getURI());
+    
     try
     {      
         long user_id = -1;
@@ -23,7 +25,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             request.getCredentials(scheme, info);
         }
         catch (...){
-            response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+            response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("type", "/errors/unauthorized");
@@ -40,7 +42,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             std::string reason;
             try{
                 if (!AuthHelper::ExtractPayload(info, user_id, user_login, reason)){
-                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_FORBIDDEN);
+                    response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("type", "/errors/unauthorized");
@@ -340,7 +342,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
             root->set("detail", "invalid path");
-            root->set("instance", "uri.getPath()");
+            root->set("instance", uri.getPath());
             std::ostream &ostr = response.send();
             Poco::JSON::Stringifier::stringify(root, ostr);
 
@@ -354,7 +356,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
         root->set("detail", "invalid JSON format");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
@@ -366,7 +368,7 @@ void PostHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
         root->set("detail", "unexpected error");
-        root->set("instance", "uri.getPath()"); 
+        root->set("instance", uri.getPath()); 
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);        
     }

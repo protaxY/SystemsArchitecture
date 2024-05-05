@@ -8,6 +8,7 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/JSON/Parser.h>
+#include <Poco/URI.h>
 
 class APIGatewayHandler : public Poco::Net::HTTPRequestHandler{
     private:       
@@ -20,7 +21,7 @@ class APIGatewayHandler : public Poco::Net::HTTPRequestHandler{
         static std::optional<std::string> GetFromCache(const std::string &method, const std::string &uri, const std::string &basicAuth);
 
         static bool AuthRequest(const std::string &basicAuth, std::string &result);
-        static Poco::Net::HTTPResponse::HTTPStatus RedirectRequest(const std::string &method, const Poco::URI &uri, const std::string &body, const std::string &token, std::string &result);
+        static Poco::Net::HTTPResponse::HTTPStatus RedirectRequest(const std::string &method, const Poco::URI &uri, const std::string &body, const std::string &authScheme, const std::string &token, std::string &result);
 
     public:
         void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;

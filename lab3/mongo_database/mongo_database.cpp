@@ -38,8 +38,7 @@ namespace database{
             Poco::MongoDB::Document &insertDocument = insertRequest->addNewDocument();
             insertDocument = document;
 
-            Poco::MongoDB::ResponseMessage response;
-            _connection.sendRequest(*insertRequest, response);
+            _connection.sendRequest(*insertRequest);
         }
         catch (std::exception &ex)
         {

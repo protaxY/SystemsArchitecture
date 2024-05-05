@@ -7,7 +7,7 @@ namespace database{
     
     MongoDatabase::MongoDatabase() : _database(Config::get().get_mongo_database())
     {
-        std::cout << "# Connecting to mongodb: " << Config::get().get_mongo() << ":" << Config::get().get_mongo_port()  << std::endl;
+        std::cout << "# Connecting to mongodb: " << Config::get().get_mongo() << ":" << Config::get().get_mongo_port() << std::endl;
         
         _connection.connect(Config::get().get_mongo(), atoi(Config::get().get_mongo_port().c_str()));
     }
@@ -38,8 +38,7 @@ namespace database{
             Poco::MongoDB::Document &insertDocument = insertRequest->addNewDocument();
             insertDocument = document;
 
-            Poco::MongoDB::ResponseMessage response;
-            _connection.sendRequest(*insertRequest, response);
+            _connection.sendRequest(*insertRequest);
         }
         catch (std::exception &ex)
         {

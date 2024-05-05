@@ -35,3 +35,5 @@ for i in range(messages_number):
     }
 
     messages_collection.insert_one(message)
+
+client.close()

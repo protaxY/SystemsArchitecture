@@ -34,3 +34,5 @@ for i in range(posts_number):
     }
 
     posts_collection.insert_one(post)
+
+client.close()
