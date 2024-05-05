@@ -32,7 +32,6 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         if (scheme != "Basic")
         {
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-            response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("type", "/errors/unauthorized");
@@ -45,21 +44,20 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
             return;
         }
 
-        // проверить, есть ли в кэше
-        if(request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
-            std::optional<std::string> cachedResult = GetFromCache(request.getMethod(), request.getURI(), info);
+        // // проверить, есть ли в кэше
+        // if(request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
+        //     std::optional<std::string> cachedResult = GetFromCache(request.getMethod(), request.getURI(), info);
 
-            if (cachedResult){
-                // std::cout << "# api gateway - from cache : " << cachedResult << std::endl;
-                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
-                response.setContentType("application/json");
-                std::ostream &ostr = response.send();
-                ostr << *cachedResult;
-                ostr.flush();
-                return;
-            }
-        }
+        //     if (cachedResult){
+        //         // std::cout << "# api gateway - from cache : " << cachedResult << std::endl;
+        //         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+        //         response.setContentType("application/json");
+        //         std::ostream &ostr = response.send();
+        //         ostr << *cachedResult;
+        //         ostr.flush();
+        //         return;
+        //     }
+        // }
         
         std::string authResult;
         std::string authScheme;
@@ -71,7 +69,6 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         }
         else if (hasCredentials && !APIGatewayHandler::AuthRequest(info, authResult)){
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-            response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
             std::ostream &ostr = response.send();
             ostr << authResult;
@@ -92,7 +89,6 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         }
         
         response.setStatus(redirectedStatus);
-        response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
         std::ostream &ostr = response.send();
         ostr << result;
@@ -100,7 +96,6 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
     }
     catch (const Poco::JSON::JSONException e){
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-        response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
@@ -109,10 +104,21 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         std::ostream &ostr = response.send();
         Poco::JSON::Stringifier::stringify(root, ostr);
     }
+    catch (const std::exception& ex)
+    {
+        response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
+        response.setContentType("application/json");
+        Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
+        root->set("status", "500");
+        root->set("detail", "unexpected error");
+        root->set("error", ex.what());
+        root->set("instance", uri.getPath());
+        std::ostream &ostr = response.send();
+        Poco::JSON::Stringifier::stringify(root, ostr);        
+    }
     catch (...)
     {
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-        response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
@@ -206,7 +212,6 @@ Poco::Net::HTTPResponse::HTTPStatus APIGatewayHandler::RedirectRequest(const std
         request.setContentType("application/json");
         request.setContentLength(body.length());
         session.sendRequest(request) << body;
-        session.sendRequest(request);
 
         Poco::Net::HTTPResponse response;
         std::istream &rs = session.receiveResponse(response);

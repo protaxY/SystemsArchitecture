@@ -30,7 +30,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 if (!previousUser){
                     user.Save();
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
                     ostr << user.get_id();
@@ -38,7 +37,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 else
                 {
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "400");
@@ -52,7 +50,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             else
             {
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
@@ -85,7 +82,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
                 if (user){
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
                     Poco::JSON::Stringifier::stringify(user->toJSON(), ostr);
@@ -93,7 +89,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 else
                 {
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
@@ -112,7 +107,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
                 if (users.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
@@ -129,7 +123,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 }
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 std::ostream &ostr = response.send();
 
@@ -161,7 +154,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
                 if (users.size() == 0){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "404");
@@ -178,7 +170,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 }
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 std::ostream &ostr = response.send();
 
@@ -187,7 +178,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             else
             {
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
@@ -227,7 +217,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
 
                 if (deletedId){
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
                     ostr << *deletedId;
@@ -235,7 +224,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 else
                 {
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "400");
@@ -249,7 +237,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             else
             {
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
@@ -313,7 +300,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     
                     if (updatedId){
                         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                        response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
                         std::ostream &ostr = response.send();
                         ostr << *updatedId;
@@ -321,7 +307,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     else
                     {
                         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                        response.setChunkedTransferEncoding(true);
                         response.setContentType("application/json");
                         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                         root->set("status", "400");
@@ -338,7 +323,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 else
                 {
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("status", "400");
@@ -352,7 +336,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             else
             {
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("status", "400");
@@ -376,7 +359,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             }
             catch (...){
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-                response.setChunkedTransferEncoding(true);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                 root->set("type", "/errors/unauthorized");
@@ -397,7 +379,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 }
                 catch (...){
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("type", "/errors/unauthorized");
@@ -414,7 +395,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                     std::string token = AuthHelper::GenerateToken(*id, login);
 
                     response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     std::ostream &ostr = response.send();
                     ostr << "{ \"id\" : \"" << *id << "\", \"token\" : \""<< token <<"\"}" << std::endl;
@@ -423,7 +403,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
                 else
                 {
                     response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-                    response.setChunkedTransferEncoding(true);
                     response.setContentType("application/json");
                     Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
                     root->set("type", "/errors/unauthorized");
@@ -438,7 +417,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
             }
 
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
-            response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("type", "/errors/unauthorized");
@@ -454,7 +432,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
         else
         {
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-            response.setChunkedTransferEncoding(true);
             response.setContentType("application/json");
             Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
             root->set("status", "400");
@@ -470,7 +447,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
     }
     catch (const Poco::JSON::JSONException e){
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-        response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "400");
@@ -482,7 +458,6 @@ void MessageHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::
     catch (...)
     {
         response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST);
-        response.setChunkedTransferEncoding(true);
         response.setContentType("application/json");
         Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
         root->set("status", "500");
