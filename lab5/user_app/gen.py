@@ -19,6 +19,8 @@ try:
 except:
     raise Exception('Can`t establish connection to database')
 
+user_logins = []
+
 with conn.cursor() as curs:
     try:
         curs.execute('DROP TABLE IF EXISTS users')
@@ -34,8 +36,12 @@ with conn.cursor() as curs:
         insert_command = 'INSERT INTO users (first_name, last_name, email, title, login, password) VALUES '
 
         for _ in range(rows_number):
-            values = f" ('{fake.first_name()}', '{fake.last_name()}', '{fake.ascii_free_email()}', '{fake.text(max_nb_chars=100)}', '{fake.unique.user_name()}', '{default_hased_password}'),"
+            user_login = fake.unique.user_name()
+            values = f" ('{fake.first_name()}', '{fake.last_name()}', '{fake.ascii_free_email()}', '{fake.text(max_nb_chars=100)}', '{user_login}', '{default_hased_password}'),"
             insert_command += values
+
+            user_logins.append(user_login)
+
         insert_command = insert_command[:-1]
 
         curs.execute(insert_command)
@@ -44,3 +50,7 @@ with conn.cursor() as curs:
         print(e)
 
 conn.close()
+
+with open('user_logins.txt', 'w') as f:
+    for login in user_logins:
+        f.write(login + '\n')

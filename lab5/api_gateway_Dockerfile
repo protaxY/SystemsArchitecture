@@ -14,6 +14,8 @@ RUN ldconfig
 
 RUN pip install faker psycopg2-binary pymongo
 
-# ADD . /opt/arch/lab5
+ADD . /opt/arch/lab5
 
 WORKDIR /opt/arch
+
+RUN cmake -S ./lab5/api_gateway -B ./lab5/api_gateway/build && cd ./lab5/api_gateway/build && make

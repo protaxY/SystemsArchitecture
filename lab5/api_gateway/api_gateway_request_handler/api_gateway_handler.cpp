@@ -29,7 +29,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         }
         catch (...){}
 
-        if (scheme != "Basic")
+        if (hasCredentials && scheme != "Basic")
         {
             response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_UNAUTHORIZED);
             response.setContentType("application/json");
@@ -49,7 +49,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         //     std::optional<std::string> cachedResult = GetFromCache(request.getMethod(), request.getURI(), info);
 
         //     if (cachedResult){
-        //         // std::cout << "# api gateway - from cache : " << cachedResult << std::endl;
+        //         // std::cout << "# api gateway - from cache : " << *cachedResult << std::endl;
         //         response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
         //         response.setContentType("application/json");
         //         std::ostream &ostr = response.send();
@@ -57,6 +57,8 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
         //         ostr.flush();
         //         return;
         //     }
+        //     // else
+        //     //     std::cout << "# api gateway - no cache" << std::endl;
         // }
         
         std::string authResult;

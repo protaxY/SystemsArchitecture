@@ -1,0 +1,564 @@
+{
+	"info": {
+		"_postman_id": "ff1b14a4-6291-4de9-8498-0c48188eb31e",
+		"name": "lab5_api_gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31408065",
+		"_collection_link": "https://gold-moon-214104.postman.co/workspace/SystemsArchitecture-~da57d8da-561c-410d-a7b1-bd7d1241fcb9/collection/31408065-ff1b14a4-6291-4de9-8498-0c48188eb31e?action=share&source=collection_link&creator=31408065"
+	},
+	"item": [
+		{
+			"name": "Получить информацию обо всех сообщениях",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информаю о сообщении по идентификатору",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить все сообщения, где пользователь отправитель или получатель",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/message/user",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить сообщения переписки двух пользователей",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/message/chat?second_user_id=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message",
+						"chat"
+					],
+					"query": [
+						{
+							"key": "second_user_id",
+							"value": "2",
+							"description": "Идентификатор второго пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить информацию о новом сообшении",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1, // Идентификатор сообщения\r\n    \"receiver_id\": 2, // Идентификатор пользователя-получаетля\r\n    \"text_content\": \"some_text\" // Текст сообщения\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновить информацию существующего сообщения",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text_content\": \"new_text\" // Новый текст сообщения\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить информацию о сообщении",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/message?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"message"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор сообщения"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информацию обо всех записях",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информаю о записи по идентификатору",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/post?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор записи"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить все записи пользователя",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/post/user",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить информацию о новой записи",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1, // Идентификатор записи\r\n    \"text_content\": \"some_text\" // Текст записи\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/post",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновить информацию существующей записи",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text_content\": \"new_text\" // Новый текст записи\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/post?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "Идентификатор записи"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить информацию о сообщении",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/post?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информацию обо всех пользователях",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "html"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Аутентифицировать пользователя и получить JWT-токен",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "login",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/user/auth",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информацю о пользователе по лоигну",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "html"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/user?login=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "login",
+							"description": "Логин пользователя"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информацю о пользователях по префиксу имени и фамилии",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/user/search?first_name=some_prefix&last_name=some_prefix",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user",
+						"search"
+					],
+					"query": [
+						{
+							"key": "first_name",
+							"value": "some_prefix",
+							"description": "Префикс имени"
+						},
+						{
+							"key": "last_name",
+							"value": "some_prefix",
+							"description": "Префикс фамилии"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить информацию о новом пользователе",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"first_name\", // Имя\r\n    \"last_name\": \"last_name\", // Фамилия\r\n    \"email\": \"email@mail.ru\", // Электронная почта\r\n    \"title\": \"title\", // Заголовок\r\n    \"login\": \"login\", // Логин (должен быть уникальным)\r\n    \"password\": \"password\" // Пароль\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/user",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновить информацию существующего пользователя",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"new_first_name\", // Имя (опционально)\r\n    \"last_name\": \"new_last_name\", // Фамилия (опционально)\r\n    \"email\": \"new_email@mail.ru\", // Электронная почта (опционально)\r\n    \"title\": \"new_title\", // Заголовок (опционально)\r\n    \"password\": \"new_password\" // Пароль (опционально)\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8888/user?login=login&password=password",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "login",
+							"description": "Логин"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"description": "Пароль (для сгенерированных пользователей пароль всегда password)"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить информацию о пользователе",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8888/user?login=login&password=password",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "login",
+							"description": "Логин"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"description": "Пароль (для сгенерированных пользователей пароль всегда password)"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
