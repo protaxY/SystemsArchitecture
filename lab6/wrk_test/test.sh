@@ -1,0 +1,1 @@
+wrk -d 300 -t 1 -c 10 --latency -s ./wrk.lua http://localhost:8888

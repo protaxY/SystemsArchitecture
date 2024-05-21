@@ -1,0 +1,9 @@
+FROM prota13/system-architecture-base
+
+RUN pip install faker pymongo
+
+ADD . /opt/arch/lab6
+
+WORKDIR /opt/arch
+
+RUN cmake -S ./lab6/post_app -B ./lab6/post_app/build && cd ./lab6/post_app/build && make

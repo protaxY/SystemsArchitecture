@@ -1,0 +1,279 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'SystemsArchitecture Lab3'
+  description: API взаимодеиствия с сервисом сообщений
+servers:
+  - url: http://localhost:8082
+    description: Docker compose server
+  - url: http://localhost:8080
+    description: Example server
+paths:
+  /message:
+    get:
+      summary: Получить информацию о сообщении по идентификатору или информацию о всех сообщениях
+      parameters:
+      - name: id
+        description: Идентификатор сообщения (если не указан, то в ответе будет информацию обо всех сообщениях)
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Информация о найденном сообщении или, если не указан идентификатор, список всех сообщений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Сообщения с таким идентификатором не существует (если был запрос по идентификатору) или никакой информации о сообщениях не найдено (если был общий запрос)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Добавить информацию о новом сообщении
+      requestBody:
+        description: JSON, содержащий информацию о новом сообщении
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                receiver_id:
+                  type: integer
+                  example: 2
+                text_content:
+                  type: string
+                  example: 'some_text'
+      responses:
+        '200':
+          description: Идентификатор нового сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Не вся необходимая информация была предоставлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Обновить информацию о сообщении
+      parameters:
+      - name: id
+        description: Идентификатор обновляемого пользователя
+        in: query
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: JSON, содержащий обновленную информацию о сообщении
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text_content:
+                  type: string
+                  example: 'new_text'
+      responses:
+        '200':
+          description: Идентификатор обновленного сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Информация для обновления неполная
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Удалить информацию о сообщении
+      parameters:
+      - name: login
+        description: Идентификатор удаляемого сообщения
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Идентификатор удаленного сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Недостает идентификатора сообщения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Неожиданная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /message/user:
+    get:
+      summary: Получить информацию о сообщениях, где пользователь отправитель или получатель
+      responses:
+        '200':
+          description: Список сообщений, пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/messages'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404: 
+          description: Для данного пользователя сообщений не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /message/chat:
+    get:
+      summary: Получить информацию о сообщениях переписки двух пользователей
+      parameters:
+      - name: second_user_id
+        description: Идентификатор второго пользователя
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Список сообщений переписки двух пользователей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/messages'
+        401:
+          description: Аутентификация не была произведена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400: 
+          description: Отсутствует идентификатор второго пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404: 
+          description: Сообщений для данной переписки не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    message_id:
+      description: Идентификатор сообщения
+      type: integer
+    messages:
+      type: array
+      items:
+        $ref: '#/components/schemas/message'
+    message:
+      type: object
+      required:
+        - id
+        - sender_id
+        - receiver_id
+        - text_content
+        - send_time 
+      properties:
+        id:
+          $ref: '#/components/schemas/message_id'
+        sender_id:
+          type: integer
+        receiver_id:
+          type: integer
+        text_content:
+          type: string
+        send_time:
+          type: string
+    Error:
+      type: object
+      required:
+        - detail
+        - instance
+        - status
+      properties:
+        detail:
+          description: Описание причины ошибки
+          type: string
+        instance:
+          description: Путь
+        status:
+          description: Код ошибки
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
