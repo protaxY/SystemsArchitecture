@@ -98,15 +98,15 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
             authScheme = "Basic";
         }
         else if (hasCredentials && (authStatus = APIGatewayHandler::AuthRequest(info, authResult)) != Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK){
-            if (authStatus == Poco::Net::HTTPResponse::HTTPStatus::HTTP_SERVICE_UNAVAILABLE){
+            if (authResult.empty()){
                 circuitBreaker.Fail("user");
 
                 response.setStatus(Poco::Net::HTTPResponse::HTTPStatus::HTTP_SERVICE_UNAVAILABLE);
                 response.setContentType("application/json");
                 Poco::JSON::Object::Ptr root = new Poco::JSON::Object();
-                root->set("title", "service" + serviceName + "unavailable, can't authorize");
+                root->set("title", "service user unavailable, can't authorize");
                 root->set("status", "503");
-                root->set("detail", serviceName + " service fail count: " + std::to_string(circuitBreaker.services[serviceName].failCount));
+                root->set("detail", "user service fail count: " + std::to_string(circuitBreaker.services["user"].failCount));
                 root->set("instance", "/api_gateway");
                 std::ostream &ostr = response.send();
                 Poco::JSON::Stringifier::stringify(root, ostr);
@@ -130,7 +130,7 @@ void APIGatewayHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poc
 
         std::string result;
         Poco::Net::HTTPResponse::HTTPStatus redirectedStatus = RedirectRequest(request.getMethod(), Poco::URI(request.getURI()), bodyStream.str(), authScheme, token, result);
-        if (redirectedStatus == Poco::Net::HTTPResponse::HTTPStatus::HTTP_SERVICE_UNAVAILABLE)
+        if (result.empty())
         {
             circuitBreaker.Fail(serviceName);
 

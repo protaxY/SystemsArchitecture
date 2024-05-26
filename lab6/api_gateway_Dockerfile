@@ -18,4 +18,4 @@ ADD . /opt/arch/lab6
 
 WORKDIR /opt/arch
 
-# RUN cmake -S ./lab6/api_gateway -B ./lab6/api_gateway/build && cd ./lab6/api_gateway/build && make
+RUN cmake -S ./lab6/api_gateway -B ./lab6/api_gateway/build && cd ./lab6/api_gateway/build && make

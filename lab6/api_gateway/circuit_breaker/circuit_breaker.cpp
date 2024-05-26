@@ -27,7 +27,15 @@ bool CircuitBreaker::Check(const std::string &serviceName)
             return true;
             break;
         case BreakerState::close:
-            return true;
+            {
+                auto currentTime = std::chrono::high_resolution_clock::now();
+                double lastFailureTimePeriod = std::chrono::duration<double>(currentTime - serviceState.lastFailureTime).count();
+
+                if (lastFailureTimePeriod >= _failResetTimeLimit)
+                    serviceState.failCount = 0;
+
+                return true;
+            }
             break;
     }
     return false;
@@ -39,6 +47,7 @@ void CircuitBreaker::Fail(const std::string &serviceName)
         ServiceState newServiceState;
         newServiceState.serviceName = serviceName;
         newServiceState.failCount = 1;
+        newServiceState.lastFailureTime = std::chrono::high_resolution_clock::now();
         services[newServiceState.serviceName] = newServiceState;
 
         return;
@@ -50,11 +59,13 @@ void CircuitBreaker::Fail(const std::string &serviceName)
     {
         case BreakerState::semi_open:
             serviceState.successCount = 0;
+            serviceState.failCount = 1;
             serviceState.breakerState = BreakerState::open;
             serviceState.openedTime = std::chrono::high_resolution_clock::now();
             break;
         case BreakerState::close:
             serviceState.failCount += 1;
+            serviceState.lastFailureTime = std::chrono::high_resolution_clock::now();
             if (serviceState.failCount > _failLimit){
                 serviceState.successCount = 0;
                 serviceState.breakerState = BreakerState::open;

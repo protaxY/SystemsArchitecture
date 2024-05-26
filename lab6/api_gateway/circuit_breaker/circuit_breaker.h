@@ -19,13 +19,15 @@ struct ServiceState
     int failCount{0};
     int successCount{0};
     std::chrono::_V2::system_clock::time_point openedTime;
+    std::chrono::_V2::system_clock::time_point lastFailureTime;
 };
 
 class CircuitBreaker{
     private:
-        const double _openTimeLimit = 5;
-        const int _failLimit = 3;
-        const int _succsesLimit = 3; 
+        const double _openTimeLimit = 20;
+        const double _failResetTimeLimit = 20; 
+        const int _failLimit = 2;
+        const int _succsesLimit = 2;
     
     public:
         std::map<std::string, ServiceState> services;

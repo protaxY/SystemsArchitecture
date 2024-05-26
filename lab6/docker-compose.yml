@@ -31,7 +31,8 @@ services:
 
       - POST_HOST=post_service
       - POST_PORT=8080
-      
+    
+    entrypoint: /bin/sh -c "lab6/start_api_gateway.sh"
     depends_on:
       db:
         condition: service_healthy
